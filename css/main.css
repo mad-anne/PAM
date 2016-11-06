@@ -1,0 +1,49 @@
+html, body
+{
+    height: 100%;
+    min-height: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+body
+{
+	background-image: url('../images/background.jpeg');
+    background-attachment: fixed;
+    background-size: cover;
+}
+
+.content
+{
+	margin: 50px 0;
+	background-color: rgba(30, 30, 30, 0.95);
+	color: #fff;
+	font-family: 'Lucida Sans Unicode';
+	border-radius: 25px;
+	height: 50%;
+	min-height: 50%;
+}
+
+#search
+{
+	margin: 20px 0;
+}
+
+.list-group
+{
+	border-radius: 0px;
+}
+
+.list-group-item
+{
+	background-color: rgba(30, 30, 30, 0.95);
+	border-right: none;
+	border-left: none;
+	border-bottom: none;
+}
+
+.list-group-item:hover
+{
+	background-color: rgba(30, 30, 30, 0.95);
+	color: #00ffff;
+}
