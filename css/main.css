@@ -16,9 +16,8 @@ body
 .content
 {
 	margin: 50px 0;
-	background-color: rgba(30, 30, 30, 0.95);
+	background-color: rgba(30, 30, 30, 0.8);
 	color: #fff;
-	font-family: 'Lucida Sans Unicode';
 	border-radius: 25px;
 	height: 50%;
 	min-height: 50%;
@@ -29,21 +28,25 @@ body
 	margin: 20px 0;
 }
 
-.list-group
+.media-body
 {
-	border-radius: 0px;
+	color: white;
+}
+
+a[href="#myModal"]:hover
+{
+	background-color: rgba(92, 95, 160, 0.5);
+}
+
+a[href="#myModal"]:visited
+{
+	background-color: rgba(92, 95, 160, 0.5);
 }
 
 .list-group-item
 {
-	background-color: rgba(30, 30, 30, 0.95);
+	background-color: rgba(0, 0, 0, 0);
 	border-right: none;
 	border-left: none;
 	border-bottom: none;
-}
-
-.list-group-item:hover
-{
-	background-color: rgba(30, 30, 30, 0.95);
-	color: #00ffff;
 }
