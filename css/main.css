@@ -11,6 +11,7 @@ body
 	background-image: url('../images/background.jpeg');
     background-attachment: fixed;
     background-size: cover;
+    overflow: hidden;
 }
 
 .content
@@ -21,6 +22,13 @@ body
 	border-radius: 25px;
 	height: 50%;
 	min-height: 50%;
+}
+
+.list-group
+{
+	overflow: auto;
+	overflow-x: hidden;
+	overflow-y: hidden;
 }
 
 #search
@@ -49,4 +57,34 @@ a[href="#myModal"]:visited
 	border-right: none;
 	border-left: none;
 	border-bottom: none;
+}
+
+.modal-content
+{
+	background-color: rgba(30, 30, 30, 0.95);
+	color: white;
+}
+
+.btn-default
+{
+	background-color: rgba(92, 95, 160, 0.5);
+	color: white;
+	border: none;
+}
+
+.btn-default:hover
+{
+	background-color: rgba(92, 95, 160, 0.5);
+	color: white;
+	border: none;
+}
+
+.modal-header
+{
+	border-bottom: 1px solid rgba(150, 150, 150, 0.5);
+}
+
+.modal-footer
+{
+	border-top: 1px solid rgba(150, 150, 150, 0.5);
 }
