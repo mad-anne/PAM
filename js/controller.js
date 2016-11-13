@@ -1,22 +1,7 @@
 angular.module('myApp', []).controller('AppCtrl', function($scope) {
 	$scope.projects = [
 	{
-		name: 'Stacja narciarska w Beskidach',
-		tags: [ {value: 'góry'},
-				{value: 'narty'},
-				{value: 'stacja'}],
-		year: 2016,
-		place: 'Polska',
-		type: 'project',
-		executor: 'beskid sp z o. o.',
-		architect: 'Marcin Major',
-		objectType: 'obiekt użytkowy',
-		style: 'nowoczesny',
-		yardage: 3810,
-		price: 650000,
-		img: 'images/img01.png'
-	},
-	{
+		id: 0,
 		name: 'Marina III',
 		tags: [ {value: 'Marina Topacz'},
 				{value: 'dom na wodzie'},
@@ -30,9 +15,27 @@ angular.module('myApp', []).controller('AppCtrl', function($scope) {
 		style: 'nowoczesny',
 		yardage: 5500,
 		price: 80000,
-		img: 'images/img02.png'
+		img: ['images/img010.png', 'images/img011.png', 'images/img012.png', 'images/img013.png', 'images/img014.png', 'images/img015.png']
 	},
 	{
+		id: 1,
+		name: 'Stacja narciarska w Beskidach',
+		tags: [ {value: 'góry'},
+				{value: 'narty'},
+				{value: 'stacja'}],
+		year: 2016,
+		place: 'Polska',
+		type: 'project',
+		executor: 'beskid sp z o. o.',
+		architect: 'Marcin Major',
+		objectType: 'obiekt użytkowy',
+		style: 'nowoczesny',
+		yardage: 3810,
+		price: 650000,
+		img: ['images/img020.png', 'images/img021.png', 'images/img022.png']
+	},
+	{
+		id: 2,
 		name: 'Budynek wielofunkcyjny na osiedlu WUWA',
 		tags: [	{value: 'konkurs'},
 				{value: 'WUWA'},
@@ -46,9 +49,10 @@ angular.module('myApp', []).controller('AppCtrl', function($scope) {
 		style: 'nowoczesny',
 		yardage: 11039,
 		price: 1200000,
-		img: 'images/img03.png'
+		img: ['images/img030.png', 'images/img031.png', 'images/img032.png', 'images/img033.png', 'images/img034.png']
 	},
 	{
+		id: 3,
 		name: 'Rozbudowa siedziby III LO we Wrocławiu',
 		tags: [ {value: 'III LO'},
 				{value: 'rozbudowa'},
@@ -64,9 +68,10 @@ angular.module('myApp', []).controller('AppCtrl', function($scope) {
 		style: 'nowoczesny',
 		yardage: 3800,
 		price: 1500000,
-		img: 'images/img04.png'
+		img: ['images/img040.png', 'images/img041.png', 'images/img042.png', 'images/img043.png', 'images/img044.png']
 	},
 	{
+		id: 4,
 		name: 'Przebudowa Zamku Topacz na hotel pięciogwiazdkowy wraz z restauracją i basenem',
 		tags: [ {value: 'hotel'},
 				{value: 'restauracja'},
@@ -82,9 +87,10 @@ angular.module('myApp', []).controller('AppCtrl', function($scope) {
 		style: 'restauracja',
 		yardage: 2050,
 		price: 750000,
-		img: 'images/img05.png'
+		img: ['images/img050.png', 'images/img051.png', 'images/img052.png', 'images/img053.png', 'images/img054.png']
 	},
 	{
+		id: 5,
 		name: 'Budynek sportowo-rekreacyjny przy ZSO nr 3 oraz Zespole Szkół Plastycznych',
 		tags: [ {value: 'sport'},
 				{value: 'rekreacja'},
@@ -98,9 +104,10 @@ angular.module('myApp', []).controller('AppCtrl', function($scope) {
 		style: 'inudstrialny',
 		yardage: 3145,
 		price: 850000,
-		img: 'images/img06.png'
+		img: ['images/img060.png', 'images/img061.png', 'images/img062.png', 'images/img063.png', 'images/img064.png']
 	},
 	{
+		id: 6,
 		name: 'Apartament na Krzykach',
 		tags: [ {value: 'mieszkanie'},
 				{value: 'luksus'},
@@ -114,9 +121,10 @@ angular.module('myApp', []).controller('AppCtrl', function($scope) {
 		style: 'nowoczesny',
 		yardage: 120,
 		price: 350000,
-		img: 'images/img07.png'
+		img: ['images/img070.png', 'images/img071.png', 'images/img072.png', 'images/img073.png']
 	},
 	{
+		id: 7,
 		name: 'Dom na wsi',
 		tags: [ {value: 'dom jednorodzinny'},
 				{value: 'zabudowa parterowa'},
@@ -130,7 +138,7 @@ angular.module('myApp', []).controller('AppCtrl', function($scope) {
 		style: 'rustykalny',
 		yardage: 166,
 		price: 700000,
-		img: 'images/img08.png'
+		img: ['images/img080.png', 'images/img081.png', 'images/img082.png', 'images/img083.png']
 	}
 	];
 
@@ -138,7 +146,7 @@ angular.module('myApp', []).controller('AppCtrl', function($scope) {
 	{
 		if ($scope.search && $scope.search.length > 0)
 		{
-			var searchWithoutSpacesAndCommas = $scope.search.replace(/\s\s+/g, ' ').replace(/,/g,'');
+			var searchWithoutSpacesAndCommas = $scope.search.replace(/,/g,' ').replace(/\s\s+/g, ' ');
 			var searchArray = searchWithoutSpacesAndCommas.split(' ');
 			var saLen = searchArray.length;
 
@@ -158,6 +166,42 @@ angular.module('myApp', []).controller('AppCtrl', function($scope) {
 		}
 		return project;
 	};
+
+	$scope.showMoreInfo = function(id)
+	{
+		var current = $scope.projects[id];
+
+		addInfo(current);
+		attachGallery(current);
+
+		var slider = new IdealImageSlider.Slider('#slider');
+		slider.start();
+	}
+
+	function addInfo(current)
+	{
+		document.getElementById("moreInfoTitle").innerHTML = current.name;
+		document.getElementById("moreInfoArchitect").innerHTML = "architekt: " + current.architect;
+		document.getElementById("moreInfoYear").innerHTML = "rok powstania: " + current.year;
+		document.getElementById("moreInfoPlace").innerHTML = "miejsce: " + current.place;
+		document.getElementById("moreInfoYardage").innerHTML = "metraż: " + current.yardage + " m<sup>2</sup>";
+		document.getElementById("moreInfoPrice").innerHTML = "cena: " + current.price + " zł";
+		document.getElementById("moreInfoType").innerHTML = "typ: " + current.type;
+		document.getElementById("moreInfoExecutor").innerHTML = "wykonawca: " + current.executor;
+		document.getElementById("moreInfoObjectType").innerHTML = "typ obiektu: " + current.objectType;
+		document.getElementById("moreInfoStyle").innerHTML = "styl: " + current.style;
+	}
+
+	function attachGallery(current)
+	{
+		var images = "";
+
+		angular.forEach(current.img, function(value, key) {
+			images += "<img src=\"" + value + "\">";
+		});
+
+		document.getElementById("slider").innerHTML = images;
+	}
 
 	function containsKeywordOneLetterTypos(project, word)
 	{

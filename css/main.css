@@ -24,13 +24,6 @@ body
 	min-height: 50%;
 }
 
-.list-group
-{
-	overflow: auto;
-	overflow-x: hidden;
-	overflow-y: hidden;
-}
-
 #search
 {
 	margin: 20px 0;
@@ -41,12 +34,17 @@ body
 	color: white;
 }
 
-a[href="#myModal"]:hover
+li[data-target="#myModal"]:hover
 {
 	background-color: rgba(92, 95, 160, 0.5);
 }
 
-a[href="#myModal"]:visited
+li[data-target="#myModal"]:visited
+{
+	background-color: rgba(92, 95, 160, 0.5);
+}
+
+li[data-target="#myModal"]:active
 {
 	background-color: rgba(92, 95, 160, 0.5);
 }
@@ -81,10 +79,37 @@ a[href="#myModal"]:visited
 
 .modal-header
 {
+	text-align: center;
 	border-bottom: 1px solid rgba(150, 150, 150, 0.5);
 }
 
 .modal-footer
 {
 	border-top: 1px solid rgba(150, 150, 150, 0.5);
+}
+
+.moreInfo
+{
+	display: block;
+	font-size: smaller;
+	line-height: 80%;
+
+    -webkit-column-count: 3; /* Chrome, Safari, Opera */
+    -moz-column-count: 3; /* Firefox */
+    column-count: 3;	
+}
+
+#slider
+{
+	left: 0;
+	width: 550px;
+	height: 250px;
+	min-height: 250px;
+	max-height: 250px;
+	margin: 50px auto;
+}
+
+#slider img
+{
+	max-width: 200px;
 }
