@@ -180,16 +180,16 @@ angular.module('myApp', []).controller('AppCtrl', function($scope) {
 
 	function addInfo(current)
 	{
-		document.getElementById("moreInfoTitle").innerHTML = current.name;
-		document.getElementById("moreInfoArchitect").innerHTML = "architekt: " + current.architect;
-		document.getElementById("moreInfoYear").innerHTML = "rok powstania: " + current.year;
-		document.getElementById("moreInfoPlace").innerHTML = "miejsce: " + current.place;
-		document.getElementById("moreInfoYardage").innerHTML = "metraż: " + current.yardage + " m<sup>2</sup>";
-		document.getElementById("moreInfoPrice").innerHTML = "cena: " + current.price + " zł";
-		document.getElementById("moreInfoType").innerHTML = "typ: " + current.type;
-		document.getElementById("moreInfoExecutor").innerHTML = "wykonawca: " + current.executor;
-		document.getElementById("moreInfoObjectType").innerHTML = "typ obiektu: " + current.objectType;
-		document.getElementById("moreInfoStyle").innerHTML = "styl: " + current.style;
+		document.getElementById("moreInfoTitle").innerHTML = "<b>" + current.name.toUpperCase() + "</b>";
+		document.getElementById("moreInfoArchitect").innerHTML = current.architect;
+		document.getElementById("moreInfoYear").innerHTML = current.year;
+		document.getElementById("moreInfoPlace").innerHTML = current.place;
+		document.getElementById("moreInfoYardage").innerHTML = current.yardage + " m<sup>2</sup>";
+		document.getElementById("moreInfoPrice").innerHTML = current.price + " zł";
+		document.getElementById("moreInfoType").innerHTML = current.type;
+		document.getElementById("moreInfoExecutor").innerHTML = current.executor;
+		document.getElementById("moreInfoObjectType").innerHTML = current.objectType;
+		document.getElementById("moreInfoStyle").innerHTML = current.style;
 	}
 
 	function attachGallery(current)

@@ -90,26 +90,46 @@ li[data-target="#myModal"]:active
 
 .moreInfo
 {
-	display: block;
+	float: left;
 	font-size: smaller;
 	line-height: 80%;
-
-    -webkit-column-count: 3; /* Chrome, Safari, Opera */
-    -moz-column-count: 3; /* Firefox */
-    column-count: 3;	
+	width: 200px;
 }
 
 #slider
 {
+	float: left;
 	left: 0;
-	width: 550px;
+	width: 450px;
 	height: 250px;
 	min-height: 250px;
 	max-height: 250px;
-	margin: 50px auto;
+	margin: 20px auto;
 }
 
 #slider img
 {
 	max-width: 200px;
+}
+
+.modal-dialog
+{
+	width: 700px;
+}
+
+.modal-body
+{
+	height: 320px;
+	min-height: 320px;
+	max-height: 320px;
+}
+
+dt
+{
+	text-align: right;
+}
+
+dl
+{
+	margin-top: 60px;
 }
