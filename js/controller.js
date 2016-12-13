@@ -1,5 +1,3 @@
-
-
 angular.module('myApp', []).controller('AppCtrl', function($scope)
 {
 	$scope.projects = projects;
@@ -31,13 +29,18 @@ angular.module('myApp', []).controller('AppCtrl', function($scope)
 
 	$scope.showMoreInfo = function(id)
 	{
-		var current = $scope.projects[searchIndex(id)];
+		var current = getProjectById(id);
 
 		addInfo(current);
 		attachGallery(current);
 
 		var slider = new IdealImageSlider.Slider('#slider');
 		slider.start();
+	}
+
+	function getProjectById(id)
+	{
+		return $scope.projects[searchIndex(id)];
 	}
 
 	function searchIndex(id)

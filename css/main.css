@@ -56,6 +56,11 @@ li[data-target="#myModal"]:active
 	border-bottom: none;
 }
 
+.list-group-item:first-child
+{
+	border-top: none;
+}
+
 .modal-content
 {
 	background-color: rgba(30, 30, 30, 0.95);
