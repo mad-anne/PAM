@@ -20,8 +20,7 @@ body
 	background-color: rgba(30, 30, 30, 0.8);
 	color: #fff;
 	border-radius: 25px;
-	height: 50%;
-	min-height: 50%;
+	min-height: 30%;
 }
 
 #search
