@@ -101,7 +101,7 @@ angular.module('myApp', []).controller('AppCtrl', function($scope) {
 		executor: 'ZIM Wrocław',
 		architect: 'Kamila Jacyniuk',
 		objectType: 'budynek edukacyjny',
-		style: 'inudstrialny',
+		style: 'industrialny',
 		yardage: 3145,
 		price: 850000,
 		img: ['images/img060.png', 'images/img061.png', 'images/img062.png', 'images/img063.png', 'images/img064.png']
