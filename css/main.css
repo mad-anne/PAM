@@ -11,7 +11,7 @@ body
 	background-image: url('../images/background.jpeg');
     background-attachment: fixed;
     background-size: cover;
-    overflow: hidden;
+    overflow-x: hidden;
 }
 
 .content
@@ -136,4 +136,9 @@ dt
 dl
 {
 	margin-top: 60px;
+}
+
+.form-horizontal
+{
+	margin: 20px auto;
 }

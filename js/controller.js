@@ -1,6 +1,16 @@
 angular.module('myApp', []).controller('AppCtrl', function($scope)
 {
 	$scope.projects = projects;
+	$scope.years = arrayInRange(1900, 2025).reverse();
+
+	function arrayInRange(start, end)
+	{
+    var foo = [];
+    for (var i = start; i <= end; i++) {
+        foo.push(i);
+    }
+    return foo;
+}
 
 	$scope.projectSearch = function(project)
 	{

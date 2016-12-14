@@ -19,6 +19,10 @@
 	<div class="row">
 		<div class="col-sm-3"></div>
 		<div class="col-sm-6 content">
+			<h3>Pracownia architektoniczna <span id="subtitle">| projekty</span></h3> 
+			<div class="text-right">
+				<a href="add_project.php"><button class="btn btn-success" type="submit">nowy</button></a>
+			</div>
 			<input type="text" name="inputSearch" id="search" ng-model="search" class="form-control input-lg" placeholder="wyszukaj projekt..." />
 			<ul class="list-group">
 				<li data-toggle="modal" data-target="#myModal" class="list-group-item" ng-repeat="project in projects | filter: projectSearch | orderBy:'year':'true'" ng-click="showMoreInfo(project.id)">
