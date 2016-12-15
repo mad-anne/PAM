@@ -24,7 +24,7 @@
 				<a href="add_project.php"><button class="btn btn-success" type="submit">nowy</button></a>
 			</div>
 			<input type="text" name="inputSearch" id="search" ng-model="search" class="form-control input-lg" placeholder="wyszukaj projekt..." />
-			<ul class="list-group">
+			<ul class="list-group pre-scrollable">
 				<li data-toggle="modal" data-target="#myModal" class="list-group-item" ng-repeat="project in projects | filter: projectSearch | orderBy:'year':'true'" ng-click="showMoreInfo(project.id)">
 					<div class="media-left">
 						<img ng-src="{{project.images[0].path}}" height="40" width="40">

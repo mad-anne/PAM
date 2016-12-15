@@ -20,7 +20,6 @@ body
 	background-color: rgba(30, 30, 30, 0.8);
 	color: #fff;
 	border-radius: 25px;
-	min-height: 30%;
 }
 
 #search
@@ -141,4 +140,11 @@ dl
 .form-horizontal
 {
 	margin: 20px auto;
+}
+
+.error
+{
+	font-size: 0.8em;
+	color: #ee0000;
+	line-height: 2em;
 }

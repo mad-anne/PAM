@@ -1,8 +1,4 @@
 <?php
-	if (! isset($_POST))
-		loadIndexPage();
-		
-
 	$name = getFormElement("projectName");
 	$year = getFormElement("projectYear");
 	$type = getFormElement("projectType");
@@ -15,24 +11,26 @@
 	$price = getFormElement("projectPrice");
 	$tags = getFormElement("projectTags");
 
-	require_once "connect.php";
-
-	$projects = array();
-
-	$connection = mysqli_connect($host, $db_user, $db_password, $db_name) or die("Error " . mysqli_error($connection));
-	
-	if ($connection->connect_errno != 0)
+	if (validateForm())
 	{
-		echo "Error: ".$connection->connect_errno;
-	}
-	else
-	{
-		$connection->set_charset("utf8");
-		$projects = addProject($connection, $name, $year, $type, $place, $executor, $architect, $objectType, $style, $yardage, $price);
-		mysqli_close($connection);
+		require_once "connect.php";
+		$connection = mysqli_connect($host, $db_user, $db_password, $db_name) or die("Error " . mysqli_error($connection));
+		
+		if ($connection->connect_errno != 0)
+		{
+			echo "Error: ".$connection->connect_errno;
+		}
+		else
+		{
+			$connection->set_charset("utf8");
+			$projects = addProject($connection, $name, $year, $type, $place, $executor, $architect, $objectType, $style, $yardage, $price);
+			mysqli_close($connection);
 
-		require_once "add_files.php";
-		loadIndexPage();
+			require_once "add_files.php";
+
+			if ($uploadSucces)
+				loadIndexPage();
+		}
 	}
 
 	function getFormElement($text)
@@ -53,6 +51,19 @@
 
 	function loadIndexPage()
 	{
-		header('Location: ../index.php');
+		header('Location: index.php');
+	}
+
+	function validateForm()
+	{
+		global $name, $projectNameErr;
+
+		if ($name == "")
+		{
+			$projectNameErr = "podaj nazwę projektu";
+			return false;
+		}
+
+		return true;
 	}
 ?>
