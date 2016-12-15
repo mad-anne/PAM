@@ -3,7 +3,8 @@
 	$objectTypeErr = $styleErr = $priceErr = $yardageErr = $tagsErr = $filesErr = "";
 
 	$name = $year = $place = $executor = $architect = $type =
-	$objectType = $style = $price = $yardage = $tags = $files = "";
+	$objectType = $style = $price = $yardage = "";
+	$tags = [];
 
 	$isCorrectForm = false;
 
@@ -23,22 +24,40 @@
 	{
 		global $name, $year, $place, $executor, $architect, $type,	$style, $price, $yardage, $tags, $files;
 
-		$name = getFormElement("name");
+		$name = allowQuotationSigns(getFormElement("name"));
 		$year = getFormElement("year");
-		$type = getFormElement("type");
-		$place = getFormElement("place");
-		$executor = getFormElement("executor");
-		$architect = getFormElement("architect");
-		$objectType = getFormElement("objectType");
-		$style = getFormElement("style");
-		$yardage = getFormElement("yardage");
+		$type = allowQuotationSigns(getFormElement("type"));
+		$place = allowQuotationSigns(getFormElement("place"));
+		$executor = allowQuotationSigns(getFormElement("executor"));
+		$architect = allowQuotationSigns(getFormElement("architect"));
+		$objectType = allowQuotationSigns(getFormElement("objectType"));
+		$style = allowQuotationSigns(getFormElement("style"));
+		$yardage = allowQuotationSigns(getFormElement("yardage"));
 		$price = getFormElement("price");
-		$tags = getFormElement("tags");
+		$tags = splitTags(getFormElement("tags"));
 	}
 
 	function getFormElement($text)
 	{
 		return isset($_POST[$text]) ? $_POST[$text] : null;
+	}
+
+	function splitTags($tags)
+	{
+		$tags = preg_replace('/\s+/', ' ', $tags);
+		$tags = preg_replace('/(\s,)+/', ',', $tags);
+		$tags = preg_replace('/(,\s)+/', ',', $tags);
+		$tags = preg_replace('/,+/', ',', $tags);
+		$tags = preg_replace('/(^,|,$)/', '', $tags);
+		$tags = allowQuotationSigns($tags);
+		return preg_split("/[,]+/", $tags);
+	}
+
+	function allowQuotationSigns($text)
+	{
+		$text = preg_replace('/(\')/', '\'', $text);
+		$text = preg_replace('/"/', '&quot;', $text);
+		return $text;
 	}
 
 	function validate()
@@ -56,13 +75,13 @@
 		if (!preg_match("/^(\d+((,|\.)\d{1,2})?)?$/", $price))
 		{
 			$isCorrectForm = false;
-			$priceErr = "wprowadź poprawną liczbę (z zaokrągleniem do dwóch miejsc po przecinku)";
+			$priceErr = "wprowadź poprawną liczbę (maksymalnie dwa miejsca po przecinku)";
 		}
 
 		if (!preg_match("/^(\d+((,|\.)\d{1,2})?)?$/", $yardage))
 		{
 			$isCorrectForm = false;
-			$yardageErr = "wprowadź poprawną liczbę (z zaokrągleniem do dwóch miejsc po przecinku)";
+			$yardageErr = "wprowadź poprawną liczbę (maksymalnie dwa miejsca po przecinku)";
 		}
 
 		return 	validateFiles() && $isCorrectForm;
@@ -70,6 +89,7 @@
 
 	function validateFiles()
 	{
+		global $filesErr;
 		$target_dir = "images/";    
 	    $uploadSuccess = true;
 
@@ -86,8 +106,11 @@
 	        }
 	        else
 	        {
-	        	$filesErr = "błąd w ładowaniu pliku";
-	        	$uploadSuccess = false;
+	        	if ($_FILES["files"]["error"][$i] != UPLOAD_ERR_NO_FILE)
+	        	{
+		        	$filesErr = "błąd w ładowaniu pliku";
+		        	$uploadSuccess = false;
+	        	}
 	        }
 	    }
 

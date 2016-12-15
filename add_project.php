@@ -156,7 +156,7 @@
 					<div class="row">
 						<label for="tags" class="col-sm-2 control-label">tagi</label>
 						<div class="col-sm-8">
-	    					<input type="text" class="form-control" id="tags" placeholder="tagi" name="tags" <?php echo 'value="'.$tags.'"'; ?>>
+	    					<input type="text" class="form-control" id="tags" placeholder="tagi" name="tags" <?php echo 'value="'.implode(", ", $tags).'"'; ?>>
 	    				</div>
 	    			</div>
 	    			<div class="row">

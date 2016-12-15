@@ -4,6 +4,7 @@
 
 	function saveProject()
 	{
+		global $name, $year, $place, $executor, $architect, $type,	$style, $price, $yardage, $objectType, $tags, $files;
 		require_once "connect.php";
 
 		$connection = mysqli_connect($host, $db_user, $db_password, $db_name) or die("Error " . mysqli_error($connection));
@@ -15,8 +16,12 @@
 		else
 		{
 			$connection->set_charset("utf8");
-			addProject($connection, $name, $year, $type, $place, $executor, $architect, $objectType, $style, $yardage, $price);
-			addFiles();
+			if (addProject($connection, $name, $year, $type, $place, $executor, $architect, $objectType, $style, $yardage, $price))
+			{
+				addTags($connection, $tags);
+				addFiles();
+			}
+			
 			mysqli_close($connection);
 			loadIndexPage();
 		}
@@ -25,11 +30,25 @@
 	function addProject($connection, $name, $year, $type, $place, $executor, $architect, $objectType, $style, $yardage, $price)
 	{
 		$sql = "INSERT INTO projects(name, year, place, type, executor, architect, objectType, style, yardage, price)
-    			VALUES('$name', '$year', '$place', '$type', '$executor', '$architect', '$objectType', '$style', '$yardage', '$price')";
+    			VALUES('$name', '$year', '$place', '$type', '$executor', '$architect', '$objectType', '$style', '$yardage', '$price');";
 
 		if(! mysqli_query($connection, $sql))
 		{
 			die('Error: ' . mysql_error());
+		}
+		return true;
+	}
+
+	function addTags($connection, $tags)
+	{
+		$sql = "SELECT MAX(id) AS last_updated_id FROM projects;";
+		$id = mysqli_fetch_array(mysqli_query($connection, $sql))["last_updated_id"] or die("Error in Selecting " . mysqli_error($connection));
+
+		foreach ($tags as $index => $tag)
+		{
+			$sql = "INSERT INTO tags(project_id, tag) VALUES('$id', '$tag');";
+			if(! mysqli_query($connection, $sql))
+				die('Error: ' . mysql_error());
 		}
 	}
 
