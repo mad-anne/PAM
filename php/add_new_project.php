@@ -1,21 +1,13 @@
 <?php
-	$name = getFormElement("projectName");
-	$year = getFormElement("projectYear");
-	$type = getFormElement("projectType");
-	$place = getFormElement("projectPlace");
-	$executor = getFormElement("projectExecutor");
-	$architect = getFormElement("projectArchitect");
-	$objectType = getFormElement("projectObjectType");
-	$style = getFormElement("projectStyle");
-	$yardage = getFormElement("projectYardage");
-	$price = getFormElement("projectPrice");
-	$tags = getFormElement("projectTags");
+	if ($isCorrectForm)
+		saveProject();
 
-	if (validateForm())
+	function saveProject()
 	{
 		require_once "connect.php";
+
 		$connection = mysqli_connect($host, $db_user, $db_password, $db_name) or die("Error " . mysqli_error($connection));
-		
+	
 		if ($connection->connect_errno != 0)
 		{
 			echo "Error: ".$connection->connect_errno;
@@ -23,19 +15,11 @@
 		else
 		{
 			$connection->set_charset("utf8");
-			$projects = addProject($connection, $name, $year, $type, $place, $executor, $architect, $objectType, $style, $yardage, $price);
+			addProject($connection, $name, $year, $type, $place, $executor, $architect, $objectType, $style, $yardage, $price);
+			addFiles();
 			mysqli_close($connection);
-
-			require_once "add_files.php";
-
-			if ($uploadSucces)
-				loadIndexPage();
+			loadIndexPage();
 		}
-	}
-
-	function getFormElement($text)
-	{
-		return isset($_POST[$text]) ? $_POST[$text] : null;
 	}
 
 	function addProject($connection, $name, $year, $type, $place, $executor, $architect, $objectType, $style, $yardage, $price)
@@ -49,21 +33,31 @@
 		}
 	}
 
+	function addFiles()
+	{
+		$target_dir = "images/";    
+	    $uploadSuccess = true;
+
+	    $total = count($_FILES["files"]["name"]);
+
+	    for($i = 0; $i < $total; $i++)
+	    {
+	        $target_file = $target_dir . basename($_FILES["files"]["name"][$i]);
+
+	        if (!uploadFile($target_file, $i))
+	            $uploadSuccess = false;
+	    }
+
+	    return $uploadSuccess;
+	}
+
+    function uploadFile($target_file, $index)
+    {
+        return move_uploaded_file($_FILES["files"]["tmp_name"][$index], $target_file);
+    }
+
 	function loadIndexPage()
 	{
 		header('Location: index.php');
-	}
-
-	function validateForm()
-	{
-		global $name, $projectNameErr;
-
-		if ($name == "")
-		{
-			$projectNameErr = "podaj nazwę projektu";
-			return false;
-		}
-
-		return true;
 	}
 ?>

@@ -1,22 +1,15 @@
 <?php
-	$projectNameErr = $projectYearErr = $projectPlaceErr = $projectExecutorErr =
-	$projectArchitectErr = $projectTypeErr = $projectStyleErr = $projectPriceErr =
-	$projectYardageErr = $projectTagsErr = $projectFilesErr = "";
-
-
-	if (isset($_POST["submit"]))
-	{
+	require_once "php/validate_form.php";
+	
+	if ($isCorrectForm)
 		require_once "php/add_new_project.php";
-	}
 ?>
-
-<?php require_once "php/projects.php"; ?>
 
 <!DOCTYPE html>
 <html lang="pl" ng-app="myApp" ng-controller="AppCtrl">
 <head>
 	<meta charset="utf-8">
-	<title>Wyszukiwarka projektów</title>
+	<title>Pracownia architektoniczna</title>
 	<link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">
 	<link rel="stylesheet" type="text/css" href="css/main.css">
 	<link rel="stylesheet" type="text/css" href="css/ideal-image-slider.css">
@@ -34,87 +27,154 @@
 			<h3>Dodaj projekt</h3>
 			<form class="form-horizontal" method="post" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]);?>" enctype="multipart/form-data">
 				<div class="form-group">
-					<label for="projectName" class="col-sm-2 control-label">nazwa</label>
-					<div class="col-sm-8">
-    					<input type="text" class="form-control" id="projectName" placeholder="nazwa" maxlength="150" name="projectName">
-    					<span class="error" id="projectNameError"><?php echo $projectNameErr; ?></span>
-    				</div>
-				</div>
-				<div class="form-group">
-					<label for="projectYear" class="col-sm-2 control-label">rok</label>
-					<div class="col-sm-2">
-						<select class="form-control" id="projectYear" ng-model="selectedName" ng-options="x for x in years" name="projectYear"></select>
-						<span class="error" id="projectYearError"><?php echo $projectYearErr; ?></span>
-    				</div>
-				</div>
-				<div class="form-group">
-					<label for="projectPlace" class="col-sm-2 control-label">miejsce</label>
-					<div class="col-sm-5">
-    					<input type="text" class="form-control" id="projectPlace" placeholder="miejsce" maxlength="45" name="projectPlace">
-    					<span class="error" id="projectPlaceError"><?php echo $projectPlaceErr; ?></span>
-    				</div>
-				</div>
-				<div class="form-group">
-					<label for="projectExecutor" class="col-sm-2 control-label">wykonawca</label>
-					<div class="col-sm-5">
-    					<input type="text" class="form-control" id="projectExecutor" placeholder="wykonawca" maxlength="45" name="projectExecutor">
-    					<span class="error" id="projectExecutorError"><?php echo $projectExecutorErr; ?></span>
-    				</div>
-				</div>
-				<div class="form-group">
-					<label for="projectArchitect" class="col-sm-2 control-label">architekt</label>
-					<div class="col-sm-5">
-    					<input type="text" class="form-control" id="projectArchitect" placeholder="architekt" maxlength="45" name="projectArchitect">
-    					<span class="error" id="projectArchitectError"><?php echo $projectArchitectErr; ?></span>
-    				</div>
-				</div>
-				<div class="form-group">
-					<label for="projectType" class="col-sm-2 control-label">typ</label>
-					<div class="col-sm-5">
-    					<input type="text" class="form-control" id="projectType" placeholder="typ" maxlength="45" name="projectType">
-    					<span class="error" id="projectTypeError"><?php echo $projectTypeErr; ?></span>
-    				</div>
-				</div>
-				<div class="form-group">
-					<label for="projectStyle" class="col-sm-2 control-label">styl</label>
-					<div class="col-sm-5">
-    					<input type="text" class="form-control" id="projectStyle" placeholder="styl" maxlength="45" name="projectStyle">
-    					<span class="error" id="projectStyleError"><?php echo $projectStyleErr; ?></span>
-    				</div>
-				</div>
-				<div class="form-group">
-					<label for="projectYardage" class="col-sm-2 control-label">metraż</label>
-					<div class="col-sm-3">
-						<div class="input-group">
-	    					<input type="text" class="form-control" id="projectYardage" placeholder="metraż" pattern="^(\d+((,|\.)\d{1,2})?)?$" name="projectYardage">
-	    					<div class="input-group-addon">m<sup>2</sup></div>
+					<div class="row">
+						<label for="name" class="col-sm-2 control-label">nazwa</label>
+						<div class="col-sm-8">
+	    					<input type="text" class="form-control" id="name" placeholder="nazwa" maxlength="150" name="name" <?php echo 'value="'.$name.'"'; ?>>
 	    				</div>
-	    				<span class="error" id="projectYardageError"><?php echo $projectYardageErr; ?></span>
-    				</div>
+	    			</div>
+	    			<div class="row">
+						<div class="col-sm-2"></div>
+						<span class="col-sm-10 error" id="nameErr"><?php echo $nameErr; ?></span>
+	    			</div>
 				</div>
 				<div class="form-group">
-					<label for="projectPrice" class="col-sm-2 control-label">cena</label>
-					<div class="col-sm-3">
-						<div class="input-group">
-	    					<input type="text" class="form-control" id="projectPrice" placeholder="cena" pattern="^(\d+((,|\.)\d{1,2})?)?$" name="projectPrice">
-	    					<div class="input-group-addon">zł</div>
+					<div class="row">
+						<label for="year" class="col-sm-2 control-label">rok</label>
+						<div class="col-sm-2">
+							<select class="form-control" id="year" ng-model="selectedName" ng-options="x for x in years" name="year"></select>
 	    				</div>
-	    				<span class="error" id="projectPriceError"><?php echo $projectPriceErr; ?></span>
-    				</div>
+	    			</div>
+	    			<div class="row">
+						<div class="col-sm-2"></div>
+						<span class="col-sm-10 error" id="yearErr"><?php echo $yearErr; ?></span>
+	    			</div>
 				</div>
 				<div class="form-group">
-					<label for="projectTags" class="col-sm-2 control-label">tagi</label>
-					<div class="col-sm-8">
-    					<input type="text" class="form-control" id="projectTags" placeholder="tagi" name="projectTags">
-    					<span class="error" id="projectTagsError"><?php echo $projectTagsErr; ?></span>
-    				</div>
+					<div class="row">
+						<label for="place" class="col-sm-2 control-label">miejsce</label>
+						<div class="col-sm-5">
+	    					<input type="text" class="form-control" id="place" placeholder="miejsce" maxlength="45" name="place" <?php echo 'value="'.$place.'"'; ?>>
+	    				</div>
+	    			</div>
+	    			<div class="row">
+						<div class="col-sm-2"></div>
+						<span class="col-sm-10 error" id="placeErr"><?php echo $placeErr; ?></span>
+	    			</div>
+				</div>
+				<div class="form-group">
+					<div class="row">
+						<label for="executor" class="col-sm-2 control-label">wykonawca</label>
+						<div class="col-sm-5">
+	    					<input type="text" class="form-control" id="executor" placeholder="wykonawca" maxlength="45" name="executor" <?php echo 'value="'.$executor.'"'; ?>>
+	    				</div>
+					</div>
+	    			<div class="row">
+						<div class="col-sm-2"></div>
+						<span class="col-sm-10 error" id="executorErr"><?php echo $executorErr; ?></span>
+					</div>
+				</div>
+				<div class="form-group">
+					<div class="row">
+						<label for="architect" class="col-sm-2 control-label">architekt</label>
+						<div class="col-sm-5">
+	    					<input type="text" class="form-control" id="architect" placeholder="architekt" maxlength="45" name="architect" <?php echo 'value="'.$architect.'"'; ?>>
+	    				</div>
+	    			</div>
+	    			<div class="row">
+						<div class="col-sm-2"></div>
+						<span class="col-sm-10 error" id="architectErr"><?php echo $architectErr; ?></span>
+					</div>
+				</div>
+				<div class="form-group">
+					<div class="row">
+						<label for="type" class="col-sm-2 control-label">typ</label>
+						<div class="col-sm-5">
+	    					<input type="text" class="form-control" id="type" placeholder="typ" maxlength="45" name="type" <?php echo 'value="'.$type.'"'; ?>>
+	    				</div>
+	    			</div>
+	    			<div class="row">
+						<div class="col-sm-2"></div>
+						<span class="col-sm-10 error" id="typeErr"><?php echo $typeErr; ?></span>
+					</div>
+				</div>
+				<div class="form-group">
+					<div class="row">
+						<label for="style" class="col-sm-2 control-label">styl</label>
+						<div class="col-sm-5">
+	    					<input type="text" class="form-control" id="style" placeholder="styl" maxlength="45" name="style" <?php echo 'value="'.$style.'"'; ?>>
+	    				</div>
+	    			</div>
+	    			<div class="row">
+						<div class="col-sm-2"></div>
+						<span class="col-sm-10 error" id="styleErr"><?php echo $styleErr; ?></span>
+					</div>
+				</div>
+				<div class="form-group">
+					<div class="row">
+						<label for="objectType" class="col-sm-2 control-label">typ obiektu</label>
+						<div class="col-sm-5">
+	    					<input type="text" class="form-control" id="objectType" placeholder="styl" maxlength="45" name="objectType" <?php echo 'value="'.$objectType.'"'; ?>>
+	    				</div>
+	    			</div>
+	    			<div class="row">
+						<div class="col-sm-2"></div>
+						<span class="col-sm-10 error" id="objectTypeErr"><?php echo $objectTypeErr; ?></span>
+					</div>
+				</div>
+				<div class="form-group">
+					<div class="row">
+						<label for="yardage" class="col-sm-2 control-label">metraż</label>
+						<div class="col-sm-3">
+							<div class="input-group">
+		    					<input type="text" class="form-control" id="yardage" placeholder="metraż" name="yardage" <?php echo 'value="'.$yardage.'"'; ?>>
+		    					<div class="input-group-addon">m<sup>2</sup></div>
+		    				</div>
+	    				</div>
+	    			</div>
+	    			<div class="row">
+						<div class="col-sm-2"></div>
+						<span class="col-sm-10 error" id="yardageErr"><?php echo $yardageErr; ?></span>
+					</div>
+				</div>
+				<div class="form-group">
+					<div class="row">
+						<label for="price" class="col-sm-2 control-label">cena</label>
+						<div class="col-sm-3">
+							<div class="input-group">
+		    					<input type="text" class="form-control" id="price" placeholder="cena"	 name="price" <?php echo 'value="'.$price.'"'; ?>>
+		    					<div class="input-group-addon">zł</div>
+		    				</div>
+	    				</div>
+	    			</div>
+	    			<div class="row">
+						<div class="col-sm-2"></div>
+						<span class="col-sm-10 error" id="priceErr"><?php echo $priceErr; ?></span>
+					</div>
+				</div>
+				<div class="form-group">
+					<div class="row">
+						<label for="tags" class="col-sm-2 control-label">tagi</label>
+						<div class="col-sm-8">
+	    					<input type="text" class="form-control" id="tags" placeholder="tagi" name="tags" <?php echo 'value="'.$tags.'"'; ?>>
+	    				</div>
+	    			</div>
+	    			<div class="row">
+						<div class="col-sm-2"></div>
+						<span class="col-sm-10 error" id="tagsErr"><?php echo $tagsErr; ?></span>
+					</div>
     			</div>
 				<div class="form-group">
-					<label for="projectFiles" class="col-sm-2 control-label">zdjęcia</label>
-					<div class="col-sm-10">
-    					<input type="file" id="projectFiles" name="projectFiles[]" multiple>
-    					<span class="error" id="projectFilesError"><?php echo $projectFilesErr; ?></span>
-    				</div>    				
+					<div class="row">
+						<label for="files" class="col-sm-2 control-label">zdjęcia</label>
+						<div class="col-sm-10">
+	    					<input type="file" id="files" name="files[]" multiple>
+	    				</div>
+	    			</div>
+	    			<div class="row">
+						<div class="col-sm-2"></div>
+						<span class="col-sm-10 error" id="filesErr"><?php echo $filesErr; ?></span>
+					</div>
     			</div>
 				<div class="row">
 					<div class="col-sm-10"></div>

@@ -1,19 +1,24 @@
 <?php
-	require_once "connect.php";
-
 	$projects = array();
+	loadData();
 
-	$connection = mysqli_connect($host, $db_user, $db_password, $db_name) or die("Error " . mysqli_error($connection));
-	
-	if ($connection->connect_errno != 0)
+	function loadData()
 	{
-		echo "Error: ".$connection->connect_errno;
-	}
-	else
-	{
-		$connection->set_charset("utf8");
-		$projects = getProjects($connection);
-		mysqli_close($connection);
+		global $projects;
+		require_once "connect.php";
+
+		$connection = mysqli_connect($host, $db_user, $db_password, $db_name) or die("Error " . mysqli_error($connection));
+		
+		if ($connection->connect_errno != 0)
+		{
+			echo "Error: ".$connection->connect_errno;
+		}
+		else
+		{
+			$connection->set_charset("utf8");
+			$projects = getProjects($connection);
+			mysqli_close($connection);
+		}
 	}
 
 	function getProjects($connection)
