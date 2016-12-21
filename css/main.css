@@ -32,17 +32,23 @@ body
 	color: white;
 }
 
-li[data-target="#myModal"]:hover
+a[href="#project"]
+{
+	text-decoration: none;
+}
+
+
+a[href="#project"] li:hover
 {
 	background-color: rgba(92, 95, 160, 0.5);
 }
 
-li[data-target="#myModal"]:visited
+a[href="#project"] li:visited
 {
 	background-color: rgba(92, 95, 160, 0.5);
 }
 
-li[data-target="#myModal"]:active
+a[href="#project"] li:active
 {
 	background-color: rgba(92, 95, 160, 0.5);
 }
@@ -147,4 +153,12 @@ dl
 	font-size: 0.8em;
 	color: #ee0000;
 	line-height: 2em;
+}
+
+#preview img
+{
+	width: 60px;
+	height: 60px;
+	margin-right: 10px;
+	margin-top: 10px;
 }

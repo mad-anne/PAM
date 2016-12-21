@@ -1,6 +1,50 @@
 <?php
-	if ($isCorrectForm)
-		saveProject();
+	$_POST = json_decode(file_get_contents('php://input'), true);
+	$name = $year = $place = $executor = $architect = $type = $objectType = $style = $price = $yardage = "";
+	$tags = [];
+
+	loadFormData();
+	saveProject();
+
+	function loadFormData()
+	{
+		global $name, $year, $place, $executor, $architect, $type,	$style, $price, $yardage, $tags, $files;
+
+		$name = allowQuotationSigns(getFormElement("name"));
+		$year = getFormElement("year");
+		$type = allowQuotationSigns(getFormElement("type"));
+		$place = allowQuotationSigns(getFormElement("place"));
+		$executor = allowQuotationSigns(getFormElement("executor"));
+		$architect = allowQuotationSigns(getFormElement("architect"));
+		$objectType = allowQuotationSigns(getFormElement("objectType"));
+		$style = allowQuotationSigns(getFormElement("style"));
+		$yardage = allowQuotationSigns(getFormElement("yardage"));
+		$price = getFormElement("price");
+		$tags = splitTags(getFormElement("tags"));
+	}
+
+	function getFormElement($text)
+	{
+		return isset($_POST[$text]) ? $_POST[$text] : null;
+	}
+
+	function allowQuotationSigns($text)
+	{
+		$text = preg_replace('/(\')/', '\'', $text);
+		$text = preg_replace('/"/', '&quot;', $text);
+		return $text;
+	}
+
+	function splitTags($tags)
+	{
+		$tags = preg_replace('/\s+/', ' ', $tags);
+		$tags = preg_replace('/(\s,)+/', ',', $tags);
+		$tags = preg_replace('/(,\s)+/', ',', $tags);
+		$tags = preg_replace('/,+/', ',', $tags);
+		$tags = preg_replace('/(^,|,$)/', '', $tags);
+		$tags = allowQuotationSigns($tags);
+		return preg_split("/[,]+/", $tags);
+	}
 
 	function saveProject()
 	{
@@ -18,12 +62,12 @@
 			$connection->set_charset("utf8");
 			if (addProject($connection, $name, $year, $type, $place, $executor, $architect, $objectType, $style, $yardage, $price))
 			{
-				addTags($connection, $tags);
-				addFiles();
+				$sql = "SELECT MAX(id) AS last_updated_id FROM projects;";
+				$id = mysqli_fetch_array(mysqli_query($connection, $sql))["last_updated_id"] or die("Error in Selecting " . mysqli_error($connection)); 
+				addTags($connection, $id, $tags);
 			}
-			
+
 			mysqli_close($connection);
-			loadIndexPage();
 		}
 	}
 
@@ -39,11 +83,8 @@
 		return true;
 	}
 
-	function addTags($connection, $tags)
+	function addTags($connection, $id, $tags)
 	{
-		$sql = "SELECT MAX(id) AS last_updated_id FROM projects;";
-		$id = mysqli_fetch_array(mysqli_query($connection, $sql))["last_updated_id"] or die("Error in Selecting " . mysqli_error($connection));
-
 		foreach ($tags as $index => $tag)
 		{
 			$sql = "INSERT INTO tags(project_id, tag) VALUES('$id', '$tag');";
@@ -54,7 +95,7 @@
 
 	function addFiles()
 	{
-		$target_dir = "images/";    
+		$target_dir = "images/";
 	    $uploadSuccess = true;
 
 	    $total = count($_FILES["files"]["name"]);
@@ -74,9 +115,4 @@
     {
         return move_uploaded_file($_FILES["files"]["tmp_name"][$index], $target_file);
     }
-
-	function loadIndexPage()
-	{
-		header('Location: index.php');
-	}
 ?>

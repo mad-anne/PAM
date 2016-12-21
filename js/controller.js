@@ -1,7 +1,8 @@
-angular.module('myApp', []).controller('AppCtrl', function($scope)
+angular.module('myApp', ["ngRoute"]).controller('AppCtrl', function($scope)
 {
 	$scope.years = arrayInRange(1900, 2025).reverse();
 	$scope.projects = (typeof(projects) !== 'undefined') ? projects : [];
+	$scope.current = $scope.projects == [] ? [] : $scope.projects[0];
 
 	function arrayInRange(start, end)
 	{
@@ -36,15 +37,9 @@ angular.module('myApp', []).controller('AppCtrl', function($scope)
 		return project;
 	};
 
-	$scope.showMoreInfo = function(id)
+	$scope.setCurrentProject = function(id)
 	{
-		var current = getProjectById(id);
-
-		addInfo(current);
-		attachGallery(current);
-
-		var slider = new IdealImageSlider.Slider('#slider');
-		slider.start();
+		$scope.current = getProjectById(id);
 	}
 
 	function getProjectById(id)
@@ -61,32 +56,6 @@ angular.module('myApp', []).controller('AppCtrl', function($scope)
 		}
 
 		return null;
-	}
-
-	function addInfo(current)
-	{
-		document.getElementById("moreInfoTitle").innerHTML = "<b>" + current.name.toUpperCase() + "</b>";
-		document.getElementById("moreInfoArchitect").innerHTML = current.architect;
-		document.getElementById("moreInfoYear").innerHTML = current.year;
-		document.getElementById("moreInfoPlace").innerHTML = current.place;
-		document.getElementById("moreInfoYardage").innerHTML = current.yardage + " m<sup>2</sup>";
-		document.getElementById("moreInfoPrice").innerHTML = current.price + " zł";
-		document.getElementById("moreInfoType").innerHTML = current.type;
-		document.getElementById("moreInfoExecutor").innerHTML = current.executor;
-		document.getElementById("moreInfoObjectType").innerHTML = current.objectType;
-		document.getElementById("moreInfoStyle").innerHTML = current.style;
-	}
-
-	function attachGallery(current)
-	{
-		var images = "";
-
-		angular.forEach(current.images, function(value, key) {
-			console.log("Wartość: " + value.path);
-			images += "<img src=\"" + value.path + "\">";
-		});
-
-		document.getElementById("slider").innerHTML = images;
 	}
 
 	function containsKeywordOneLetterTypos(project, word)
@@ -178,4 +147,137 @@ angular.module('myApp', []).controller('AppCtrl', function($scope)
 		});
 		return existsTag;
 	}
+})
+.controller('detailsCtrl', function($scope){
+	
+	startSlider();
+
+	function startSlider()
+	{
+		attachGallery($scope.current);
+		var slider = new IdealImageSlider.Slider('#slider');
+		slider.start();
+	}
+
+	function attachGallery(current)
+	{
+		var images = "";
+
+		angular.forEach(current.images, function(value, key)
+		{
+			images += "<img src=\"" + value + "\">";
+		});
+
+		document.getElementById("slider").innerHTML = images;
+	}
+})
+.controller('addProjectCtrl', ['$scope', '$http', function($scope, $http){
+	$scope.numberRegex = "/^(\d+((,|\.)\d{1,2})?)?$/";
+	$scope.years = arrayInRange(1900, 2025).reverse();
+	$scope.url = 'php/add_new_project.php';
+
+	function arrayInRange(start, end)
+	{
+   		var arr = [];
+	    for (var i = start; i <= end; i++)
+	        arr.push(i);
+    	return arr;
+	}
+
+	$scope.addProject = function() {
+		var addProjectForm = encodeFormToJSON();
+
+		$http.post($scope.url, addProjectForm)
+		.success(function(data) {
+			console.log(data);
+			console.log('Successful insert of project to database');
+		})
+		.error(function(data) {
+			console.log(data);
+			console.log('Unsuccessful insert of project to database');
+		});
+
+		saveFiles();
+	}
+
+	function encodeFormToJSON()
+	{
+		var result = {};
+		result.name = document.querySelector('#name').value;
+		var year = document.querySelector('#year')
+		result.year = year.options[year.selectedIndex].text;
+		result.place = document.querySelector('#place').value;
+		result.executor = document.querySelector('#executor').value;
+		result.architect = document.querySelector('#architect').value;
+		result.type = document.querySelector('#type').value;
+		result.style = document.querySelector('#style').value;
+		result.objectType = document.querySelector('#objectType').value;
+		result.yardage = document.querySelector('#yardage').value;
+		result.price = document.querySelector('#price').value;
+		result.tags = document.querySelector('#tags').value;
+		return result;
+	}
+
+	function saveFiles()
+	{
+		var xhr = new XMLHttpRequest();
+		xhr.open('POST', 'php/add_files.php', true);
+		var fd = new FormData();
+
+		var files = document.querySelector('#files').files;
+		
+		for (var i = 0; i < files.length; i++)
+		{
+			fd.append("files[]", files[i]);
+		}
+		
+		xhr.onload = function() {
+			if (this.status == 200)
+				console.log('Server response:', this.response);
+		};
+
+		xhr.send(fd);
+	}
+}])
+.config(function($routeProvider, $locationProvider) {
+		$routeProvider
+		.when("/", { templateUrl : "main.php"})
+		.when("/project", { templateUrl : "project.php",
+		controller: "detailsCtrl"})
+		.when("/new", { templateUrl : "add_project.php",
+		controller: "addProjectCtrl"});
+
+	// $locationProvider.html5Mode(true);
 });
+
+function readURL(input)
+{
+	removeExistingImages();
+	
+	var preview = document.querySelector('#preview');
+    var files   = document.querySelector('input[type=file]').files;
+
+    function readAndPreview(file) {
+    	var reader = new FileReader();
+
+        reader.addEventListener("load", function () {
+			var image = new Image();
+			image.src = this.result;
+			image.name = file.name;
+			image.class = "imagePreview";
+	        preview.appendChild(image);
+        }, false);
+
+        reader.readAsDataURL(file);
+	}
+
+	if (files)
+    	[].forEach.call(files, readAndPreview);
+}
+
+function removeExistingImages()
+{
+	var preview = document.querySelector('#preview');
+	while (preview.firstChild)
+	    preview.removeChild(preview.firstChild);
+}

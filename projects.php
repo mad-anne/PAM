@@ -5,7 +5,7 @@
 	function loadData()
 	{
 		global $projects;
-		require_once "connect.php";
+		require_once "php/connect.php";
 
 		$connection = mysqli_connect($host, $db_user, $db_password, $db_name) or die("Error " . mysqli_error($connection));
 		
@@ -36,7 +36,13 @@
 
 	function getImagesForProject($connection, $id)
 	{
-		return selectData($connection, "SELECT path FROM images WHERE project_id = $id");
+		$results = array();
+		$img_dir = "images/";
+		$img_id = basename(str_pad($id, 6, '0', STR_PAD_LEFT));
+		$startPath = $img_dir . 'img' . $img_id;
+		$results = glob($startPath . "??.???");
+
+		return $results;
 	}
 
 	function getTagsForProject($connection, $id)

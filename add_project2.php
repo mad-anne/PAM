@@ -1,10 +1,10 @@
 <h3>Pracownia architektoniczna <span id="subtitle">| dodaj projekt</span></h3>
-<form class="form-horizontal" ng-submit="addProject()" name="addProjectForm" id="addProjectForm" enctype="multipart/form-data">
+<form class="form-horizontal" ng-submit="addProject()" name="addProjectForm" enctype="multipart/form-data">
 <div class="form-group">
 	<div class="row">
 		<label for="name" class="col-sm-2 control-label">nazwa</label>
 		<div class="col-sm-8">
-			<input type="text" class="form-control" id="name" maxlength="150" name="name" ng-model="name">
+			<input type="text" class="form-control" id="name" maxlength="150" name="name" ng-model="name" required>
 		</div>
 	</div>
 	<div class="row">
@@ -153,7 +153,11 @@
 		<div class="col-sm-2"></div>
 		<!-- <span class="col-sm-10 error" id="filesErr">{{filesErr}}</span> -->
 	</div>
+<!-- 	<div ng-messages="addProjectForm.files.$error" ng-if="addProjectForm.imageFile.$touched">
+     <p ng-message="required">This field is required</p>
+     <p ng-message="extension">Invalid Image</p>
  </div>
+ --></div>
 <div class="row">
 	<div class="col-sm-10"></div>
 	<div class="col-sm-2">

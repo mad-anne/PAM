@@ -1,19 +1,24 @@
 <?php
-	$nameErr = $yearErr = $placeErr = $executorErr = $architectErr = $typeErr =
-	$objectTypeErr = $styleErr = $priceErr = $yardageErr = $tagsErr = $filesErr = "";
+	$errors = array();
+	$data = array();
+	$_POST = json_decode(file_get_contents('php://input'), true);
 
 	$name = $year = $place = $executor = $architect = $type =
 	$objectType = $style = $price = $yardage = "";
 	$tags = [];
 
-	$isCorrectForm = false;
-
 	if (isPostFormSend())
 	{
 		loadFormData();
-		$isCorrectForm = validate();
+		validate();
 	}
 
+	if (!empty($errors))
+ 		$data['errors']  = $errors;
+	else
+		$data['message'] = 'Form data is going well';
+
+	echo json_encode($data);
 
 	function isPostFormSend()
 	{
@@ -62,26 +67,26 @@
 
 	function validate()
 	{
+		global $errors;
 		global $name, $year, $place, $executor, $architect, $type,	$style, $price, $yardage, $tags, $files;
-		global $nameErr, $yearErr, $placeErr, $executorErr, $architectErr, $typeErr, $styleErr, $priceErr, $yardageErr, $tagsErr, $filesErr;
 		$isCorrectForm = true;
 
 		if ($name == "")
 		{
 			$isCorrectForm = false;
-			$nameErr = "podaj nazwę projektu";
+			$errors['name'] = "podaj nazwę projektu";
 		}
 
 		if (!preg_match("/^(\d+((,|\.)\d{1,2})?)?$/", $price))
 		{
 			$isCorrectForm = false;
-			$priceErr = "wprowadź poprawną liczbę (maksymalnie dwa miejsca po przecinku)";
+			$errors['price'] = "wprowadź poprawną liczbę (maksymalnie dwa miejsca po przecinku)";
 		}
 
 		if (!preg_match("/^(\d+((,|\.)\d{1,2})?)?$/", $yardage))
 		{
 			$isCorrectForm = false;
-			$yardageErr = "wprowadź poprawną liczbę (maksymalnie dwa miejsca po przecinku)";
+			$errors['yardage'] = "wprowadź poprawną liczbę (maksymalnie dwa miejsca po przecinku)";
 		}
 
 		return 	validateFiles() && $isCorrectForm;
@@ -89,7 +94,7 @@
 
 	function validateFiles()
 	{
-		global $filesErr;
+		global $errors;
 		$target_dir = "images/";    
 	    $uploadSuccess = true;
 
@@ -108,7 +113,7 @@
 	        {
 	        	if ($_FILES["files"]["error"][$i] != UPLOAD_ERR_NO_FILE)
 	        	{
-		        	$filesErr = "błąd w ładowaniu pliku";
+		        	$errors['files'] = "błąd w ładowaniu pliku";
 		        	$uploadSuccess = false;
 	        	}
 	        }
@@ -125,38 +130,38 @@
 
     function isCorrectNumberOfFiles()
     {
-    	global $filesErr;
-    	$filesErr = count($_FILES["files"]["name"]) <= 10 ? "" : "maksymalna ilość zdjęć: 10";
-    	return $filesErr == "";
+    	global $errors;
+    	$errors['files'] = count($_FILES["files"]["name"]) <= 10 ? "" : "maksymalna ilość zdjęć: 10";
+    	return $errors['files'] == "";
     }
 
     function isFileImage($index) // Check if image file is a actual image or fake image
     {
-        global $filesErr;
-        $filesErr = getimagesize($_FILES["files"]["tmp_name"][$index]) ? "" : "Podany plik nie jest obrazem.";
-        return $filesErr == "";
+        global $errors;
+        $errors['files'] = getimagesize($_FILES["files"]["tmp_name"][$index]) ? "" : "Podany plik nie jest obrazem.";
+        return $errors['files'] == "";
     }
 
     function ifFileAlreadyExists($target_file)
     {
-        global $filesErr;
-        $filesErr = file_exists($target_file) ? "Podany plik już istnieje." : "";
-        return $filesErr == "";
+        global $errors;
+        $errors['files'] = file_exists($target_file) ? "Podany plik już istnieje." : "";
+        return $errors['files'] == "";
     }
 
     function isImageSizeCorrect($index)
     {
-        global $filesErr;
-        $filesErr = $_FILES["files"]["size"][$index] <= 2000000 ? "" : "Maksymalny rozmiar pliku 2 MB został przekroczony.";
-        return $filesErr == "";
+        global $errors;
+        $errors['files'] = $_FILES["files"]["size"][$index] <= 2000000 ? "" : "Maksymalny rozmiar pliku 2 MB został przekroczony.";
+        return $errors['files'] == "";
     }
 
     function isImageFormatCorrect($target_file) // Allow certain file formats
     {
-        global $filesErr;
+        global $errors;
         $filetype = pathinfo($target_file, PATHINFO_EXTENSION);
         $isCorrectType = ($filetype == "jpg" || $filetype == "png" || $filetype == "jpeg" || $filetype == "gif");
-        $filesErr = $isCorrectType ? "" : "Nieprawidłowy format pliku. Dozwolone: .jpg .png .jpeg .gif.";
-        return $filesErr == "";
+        $errors['files'] = $isCorrectType ? "" : "Nieprawidłowy format pliku. Dozwolone: .jpg .png .jpeg .gif.";
+        return $errors['files'] == "";
     }
 ?>
