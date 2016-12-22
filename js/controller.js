@@ -171,7 +171,11 @@ angular.module('myApp', ["ngRoute"]).controller('AppCtrl', function($scope)
 		document.getElementById("slider").innerHTML = images;
 	}
 })
-.controller('addProjectCtrl', ['$scope', '$http', function($scope, $http){
+.controller('projectsLoad', function($scope){
+
+	
+})
+.controller('addProjectCtrl', ['$scope', '$http', '$location', function($scope, $http, $location){
 	$scope.numberRegex = "/^(\d+((,|\.)\d{1,2})?)?$/";
 	$scope.years = arrayInRange(1900, 2025).reverse();
 	$scope.url = 'php/add_new_project.php';
@@ -198,6 +202,7 @@ angular.module('myApp', ["ngRoute"]).controller('AppCtrl', function($scope)
 		});
 
 		saveFiles();
+		$location.path("/");
 	}
 
 	function encodeFormToJSON()
@@ -230,7 +235,7 @@ angular.module('myApp', ["ngRoute"]).controller('AppCtrl', function($scope)
 		{
 			fd.append("files[]", files[i]);
 		}
-		
+
 		xhr.onload = function() {
 			if (this.status == 200)
 				console.log('Server response:', this.response);
@@ -241,7 +246,8 @@ angular.module('myApp', ["ngRoute"]).controller('AppCtrl', function($scope)
 }])
 .config(function($routeProvider, $locationProvider) {
 		$routeProvider
-		.when("/", { templateUrl : "main.php"})
+		.when("/", { templateUrl : "main.php",
+				controller: "projectsLoad"})
 		.when("/project", { templateUrl : "project.php",
 		controller: "detailsCtrl"})
 		.when("/new", { templateUrl : "add_project.php",

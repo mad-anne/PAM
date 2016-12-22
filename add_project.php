@@ -4,7 +4,7 @@
 	<div class="row">
 		<label for="name" class="col-sm-2 control-label">nazwa</label>
 		<div class="col-sm-8">
-			<input type="text" class="form-control" id="name" maxlength="150" name="name" ng-model="name">
+			<input type="text" class="form-control" id="name" maxlength="150" name="name" ng-model="name" required>
 		</div>
 	</div>
 	<div class="row">

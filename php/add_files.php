@@ -1,17 +1,23 @@
 <?php
-	$target_dir = "../images/";
-	$projectId = getLastUpdatedProjectId();
-	$target_prefix = $target_dir . 'img' .str_pad($projectId, 6, "0", STR_PAD_LEFT);
+	if (isset($_FILES["files"]) && isset($_FILES["files"]["name"]))
+		uploadFiles();
 
-	$total = count($_FILES["files"]["name"]);
-
-	for($i = 0; $i < $total; $i++)
+	function uploadFiles()
 	{
-		$fileToUpload = $_FILES["files"]["tmp_name"][$i];
-		$ext = pathinfo($_FILES["files"]["name"][0], PATHINFO_EXTENSION);
-		$target_suffix = str_pad($i, 2, "0", STR_PAD_LEFT);
-		$target = $target_prefix . $target_suffix . '.' . $ext;
-		move_uploaded_file($fileToUpload, $target);
+		$projectId = getLastUpdatedProjectId();
+		$target_dir = "../images/";
+		$target_prefix = $target_dir . 'img' .str_pad($projectId, 6, "0", STR_PAD_LEFT);
+
+		$total = count($_FILES["files"]["name"]);
+
+		for($i = 0; $i < $total; $i++)
+		{
+			$fileToUpload = $_FILES["files"]["tmp_name"][$i];
+			$ext = pathinfo($_FILES["files"]["name"][0], PATHINFO_EXTENSION);
+			$target_suffix = str_pad($i, 2, "0", STR_PAD_LEFT);
+			$target = $target_prefix . $target_suffix . '.' . $ext;
+			move_uploaded_file($fileToUpload, $target);
+		}
 	}
 
 	function getLastUpdatedProjectId()
