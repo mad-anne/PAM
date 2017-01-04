@@ -1,19 +1,16 @@
 <?php
 	$_POST = json_decode(file_get_contents('php://input'), true);
-	$name = $year = $place = $executor = $architect = $type = $objectType = $style = $price = $yardage = "";
-	$exists = false;
+	$id = $name = $year = $place = $executor = $architect = $type = $objectType = $style = $price = $yardage = "";
 	$tags = [];
 
-	var_dump($exists);
 	loadFormData();
-	var_dump($exists);
 	saveProject();
 
 	function loadFormData()
 	{
-		global $exists, $name, $year, $place, $executor, $architect, $type,	$style, $price, $yardage, $tags, $files;
+		global $id, $name, $year, $place, $executor, $architect, $type,	$style, $price, $yardage, $tags, $files;
 
-		$exists = getFormElement("exists");
+		$id = getFormElement("id");
 		$name = allowQuotationSigns(getFormElement("name"));
 		$year = getFormElement("year");
 		$type = allowQuotationSigns(getFormElement("type"));
@@ -52,7 +49,7 @@
 
 	function saveProject()
 	{
-		global $exists, $name, $year, $place, $executor, $architect, $type,	$style, $price, $yardage, $objectType, $tags, $files;
+		global $id, $name, $year, $place, $executor, $architect, $type,	$style, $price, $yardage, $objectType, $tags, $files;
 		require_once "connect.php";
 
 		$connection = mysqli_connect($host, $db_user, $db_password, $db_name) or die("Error " . mysqli_error($connection));
@@ -64,7 +61,7 @@
 		else
 		{
 			$connection->set_charset("utf8");
-			if (addProject($connection, $exists, $name, $year, $type, $place, $executor, $architect, $objectType, $style, $yardage, $price))
+			if (addProject($connection, $id, $name, $year, $type, $place, $executor, $architect, $objectType, $style, $yardage, $price))
 			{
 				$sql = "SELECT MAX(id) AS last_updated_id FROM projects;";
 				$id = mysqli_fetch_array(mysqli_query($connection, $sql))["last_updated_id"] or die("Error in Selecting " . mysqli_error($connection)); 
@@ -75,25 +72,35 @@
 		}
 	}
 
-	function addProject($connection, $exists, $name, $year, $type, $place, $executor, $architect, $objectType, $style, $yardage, $price)
+	function addProject($connection, $id, $name, $year, $type, $place, $executor, $architect, $objectType, $style, $yardage, $price)
 	{
-		$sql = "INSERT INTO projects(name, year, place, type, executor, architect, objectType, style, yardage, price)
-    			VALUES('$name', '$year', '$place', '$type', '$executor', '$architect', '$objectType', '$style', '$yardage', '$price');";
+		if ($id == null)
+			$sql = "INSERT INTO projects(name, year, place, type, executor, architect, objectType, style, yardage, price)
+	    			VALUES('$name', '$year', '$place', '$type', '$executor', '$architect', '$objectType', '$style', '$yardage', '$price');";
+	    else
+			$sql = "UPDATE projects SET name='$name', year='$year', place='$place', type='$type', executor='$executor', architect='$architect', objectType='$objectType', style='$style', yardage='$yardage', price='$price' WHERE id='$id'";
 
 		if(! mysqli_query($connection, $sql))
 		{
-			die('Error: ' . mysql_error());
+			die('Error: ' . mysqli_error());
 		}
 		return true;
 	}
 
 	function addTags($connection, $id, $tags)
 	{
+		if ($id != null)
+		{
+			$sql = "DELETE FROM tags WHERE project_id = '$id';";
+			if(! mysqli_query($connection, $sql))
+				die('Error: ' . mysqli_error('Cannot add tags'));
+		}
+
 		foreach ($tags as $index => $tag)
 		{
 			$sql = "INSERT INTO tags(project_id, tag) VALUES('$id', '$tag');";
 			if(! mysqli_query($connection, $sql))
-				die('Error: ' . mysql_error());
+				die('Error: ' . mysqli_error('Cannot add tags'));
 		}
 	}
 ?>

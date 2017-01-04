@@ -57,7 +57,11 @@ app.service('globalProjects', function($http) {
 
 app.controller('detailsCtrl', function($scope, $http, $location, globalProjects) {
 	$scope.current = globalProjects.getCurrent();
-	startSlider();
+
+	if ($scope.current == null)
+		$location.path('/');
+	else
+		startSlider();
 
 	function startSlider()
 	{
@@ -227,9 +231,15 @@ app.controller('addProjectCtrl', ['$scope', '$http', '$location', 'globalProject
 	$scope.numberRegex = "/^(\d+((,|\.)\d{1,2})?)?$/";
 	$scope.years = arrayInRange(1900, 2025).reverse();
 	$scope.url = 'php/add_new_project.php';
-	$scope.exists = false;
+
 	$scope.current = globalProjects.getCurrent();
-	$scope.selectedOption = $scope.years[$scope.years.indexOf(parseInt($scope.current.year))];
+
+	if ($scope.current)
+	{
+		$scope.selectedOption = $scope.years[$scope.years.indexOf(parseInt($scope.current.year))];
+		$scope.tags = getTags($scope.current.tags).join(', '); 
+		loadImages($scope.current.images);
+	}
 
 	function arrayInRange(start, end)
 	{
@@ -237,6 +247,15 @@ app.controller('addProjectCtrl', ['$scope', '$http', '$location', 'globalProject
 	    for (var i = start; i <= end; i++)
 	        arr.push(i);
     	return arr;
+	}
+
+	function getTags(tags)
+	{
+		var result = [];
+		angular.forEach(tags, function(value, key) {
+			result.push(value.tag);
+		});
+		return result;
 	}
 
 	$scope.addProject = function() {
@@ -258,7 +277,7 @@ app.controller('addProjectCtrl', ['$scope', '$http', '$location', 'globalProject
 	function encodeFormToJSON()
 	{
 		var result = {};
-		result.exists = false;
+		result.id = $scope.current == null ? null : $scope.current.id;
 		result.name = document.querySelector('#name').value;
 		var year = document.querySelector('#year')
 		result.year = year.options[year.selectedIndex].text;
@@ -295,7 +314,23 @@ app.controller('addProjectCtrl', ['$scope', '$http', '$location', 'globalProject
 		};
 
 		xhr.send(fd);
+		globalProjects.setCurrent(null);
 		$location.path('/');
+	}
+
+	function loadImages(images)
+	{
+		removeExistingImages();
+		
+		var preview = document.querySelector('#preview');
+
+		angular.forEach(images, function(value, key) {
+			var image = new Image();
+			image.src = value;
+			image.name = value.substr(7);
+			image.class = "imagePreview";
+			preview.appendChild(image);
+		}, false);	
 	}
 }]);
 

@@ -130,7 +130,7 @@
 	<div class="row">
 		<label for="tags" class="col-sm-2 control-label">tagi</label>
 		<div class="col-sm-8">
-			<input type="text" class="form-control" id="tags" name="tags">
+			<input type="text" class="form-control" id="tags" name="tags" ng-value="tags">
 		</div>
 	</div>
 	<div class="row">
