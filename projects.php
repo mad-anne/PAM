@@ -1,6 +1,8 @@
 <?php
 	$projects = array();
 	loadData();
+	header('Content-Type: application/json');
+	echo json_encode($projects);
 
 	function loadData()
 	{
@@ -64,7 +66,3 @@
 		return $results;
 	}
 ?>
-
-<script>
-	var projects = <?php echo json_encode($projects); ?>;
-</script>

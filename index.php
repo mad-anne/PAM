@@ -1,9 +1,6 @@
-<?php require_once "projects.php"; ?>
-
 <!DOCTYPE html>
-<html lang="pl" ng-app="myApp" ng-controller="AppCtrl">
+<html lang="pl" ng-app="myApp">
 <head>
- 	<!-- <base href="/"> -->
 	<meta charset="utf-8">
 	<title>Pracownia architektoniczna</title>
 	<link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">

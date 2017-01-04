@@ -4,7 +4,7 @@
 	<div class="row">
 		<label for="name" class="col-sm-2 control-label">nazwa</label>
 		<div class="col-sm-8">
-			<input type="text" class="form-control" id="name" maxlength="150" name="name" ng-model="name" required>
+			<input type="text" class="form-control" id="name" maxlength="150" name="name" ng-model="name" ng-value="current.name" required>
 		</div>
 	</div>
 	<div class="row">
@@ -16,7 +16,7 @@
 	<div class="row">
 		<label for="year" class="col-sm-2 control-label">rok</label>
 		<div class="col-sm-2">
-			<select class="form-control" id="year" ng-model="selectedName" ng-options="x for x in years" name="year"></select>
+			<select class="form-control" id="year" ng-options="x for x in years" name="year" ng-model="selectedOption"></select>
 		</div>
 	</div>
 	<div class="row">
@@ -28,7 +28,7 @@
 	<div class="row">
 		<label for="place" class="col-sm-2 control-label">miejsce</label>
 		<div class="col-sm-5">
-			<input type="text" class="form-control" id="place" maxlength="45" name="place">
+			<input type="text" class="form-control" id="place" maxlength="45" name="place" ng-value="current.place">
 		</div>
 	</div>
 	<div class="row">
@@ -40,7 +40,7 @@
 	<div class="row">
 		<label for="executor" class="col-sm-2 control-label">wykonawca</label>
 		<div class="col-sm-5">
-			<input type="text" class="form-control" id="executor" maxlength="45" name="executor">
+			<input type="text" class="form-control" id="executor" maxlength="45" name="executor" ng-value="current.executor">
 		</div>
 	</div>
 	<div class="row">
@@ -52,7 +52,7 @@
 	<div class="row">
 		<label for="architect" class="col-sm-2 control-label">architekt</label>
 		<div class="col-sm-5">
-			<input type="text" class="form-control" id="architect" maxlength="45" name="architect">
+			<input type="text" class="form-control" id="architect" maxlength="45" name="architect" ng-value="current.architect">
 		</div>
 	</div>
 	<div class="row">
@@ -64,7 +64,7 @@
 	<div class="row">
 		<label for="type" class="col-sm-2 control-label">typ</label>
 		<div class="col-sm-5">
-			<input type="text" class="form-control" id="type" maxlength="45" name="type">
+			<input type="text" class="form-control" id="type" maxlength="45" name="type" ng-value="current.type">
 		</div>
 	</div>
 	<div class="row">
@@ -76,7 +76,7 @@
 	<div class="row">
 		<label for="style" class="col-sm-2 control-label">styl</label>
 		<div class="col-sm-5">
-			<input type="text" class="form-control" id="style" maxlength="45" name="style">
+			<input type="text" class="form-control" id="style" maxlength="45" name="style" ng-value="current.style">
 		</div>
 	</div>
 	<div class="row">
@@ -88,7 +88,7 @@
 	<div class="row">
 		<label for="objectType" class="col-sm-2 control-label">typ obiektu</label>
 		<div class="col-sm-5">
-			<input type="text" class="form-control" id="objectType" maxlength="45" name="objectType">
+			<input type="text" class="form-control" id="objectType" maxlength="45" name="objectType" ng-value="current.objectType">
 		</div>
 	</div>
 	<div class="row">
@@ -101,7 +101,7 @@
 		<label for="yardage" class="col-sm-2 control-label">metraż</label>
 		<div class="col-sm-3">
 			<div class="input-group">
-				<input type="text" class="form-control" id="yardage" name="yardage" ng-model="yardage" ng-pattern="/^(\d+((,|\.)\d{1,2})?)?$/">
+				<input type="text" class="form-control" id="yardage" name="yardage" ng-model="yardage" ng-pattern="/^(\d+((,|\.)\d{1,2})?)?$/" ng-value="current.yardage">
 				<div class="input-group-addon">m<sup>2</sup></div>
 			</div>
 		</div>
@@ -116,7 +116,7 @@
 		<label for="price" class="col-sm-2 control-label">cena</label>
 		<div class="col-sm-3">
 			<div class="input-group">
-				<input type="text" class="form-control" id="price" name="price" ng-model="price" ng-pattern="/^(\d+((,|\.)\d{1,2})?)?$/">
+				<input type="text" class="form-control" id="price" name="price" ng-model="price" ng-pattern="/^(\d+((,|\.)\d{1,2})?)?$/" ng-value="current.price">
 				<div class="input-group-addon">zł</div>
 			</div>
 		</div>

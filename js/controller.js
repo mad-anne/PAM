@@ -1,15 +1,110 @@
-angular.module('myApp', ["ngRoute"]).controller('AppCtrl', function($scope)
-{
-	$scope.years = arrayInRange(1900, 2025).reverse();
-	$scope.projects = (typeof(projects) !== 'undefined') ? projects : [];
-	$scope.current = $scope.projects == [] ? [] : $scope.projects[0];
+var app = angular.module('myApp', ['ngRoute', 'searchEngine']);
+var app_searchEngine = angular.module('searchEngine', []);
 
-	function arrayInRange(start, end)
+app.config(function($routeProvider, $locationProvider) {
+		$routeProvider
+		.when(	'/',
+				{ templateUrl : 'main.php',
+				controller: 'projectsLoad'})
+		.when(	'/project',
+				{ templateUrl : 'project.php',
+				controller: 'detailsCtrl'})
+		.when(	'/new',
+				{ templateUrl : 'add_project.php',
+				controller: 'addProjectCtrl'});
+});
+
+app.service('globalProjects', function($http) {
+	_projects = null;
+	_current = null;
+
+	this.async = function() {
+		var promise = $http.get('projects.php')
+		.then(function(response) {
+			_projects = response.data
+			return _projects;
+		});
+		return promise;
+	};
+
+	this.setCurrent = function(id) {
+		var index = getIndexById(id);
+		_current = index != -1 ?  _projects[index] : null;
+	};
+
+	this.getCurrent = function() {
+		return _current;
+	}
+
+	getIndexById = function (id)
 	{
-   		var arr = [];
-	    for (var i = start; i <= end; i++)
-	        arr.push(i);
-    	return arr;
+		var index = -1;
+		if (_projects != null)
+		{
+			for (var i = 0; i < _projects.length; ++i)
+			{
+				if (_projects[i].id == id)
+				{
+					index = i;
+					break;
+				}
+			}
+		}
+
+		return index;
+	}
+});
+
+app.controller('detailsCtrl', function($scope, $http, $location, globalProjects) {
+	$scope.current = globalProjects.getCurrent();
+	startSlider();
+
+	function startSlider()
+	{
+		attachGallery($scope.current);
+		var slider = new IdealImageSlider.Slider('#slider');
+		slider.start();
+	}
+
+	function attachGallery(current)
+	{
+		var images = "";
+
+		angular.forEach(current.images, function(value, key)
+		{
+			images += "<img src=\"" + value + "\">";
+		});
+
+		document.getElementById("slider").innerHTML = images;
+	}
+
+	$scope.removeProject = function(id) {
+
+		$http.delete('php/remove_project.php?id=' + id)
+		.success(function(data) {
+			console.log(data);
+		})
+		.error(function(data) {
+			console.log(data);
+		});
+
+		$location.path('/');
+	}
+
+	$scope.modifyProject = function()
+	{
+		$location.path('new');
+	}
+});
+
+app.controller('projectsLoad', function($scope, $http, globalProjects) {
+	globalProjects.async().then(function(d) {
+		$scope.projects = d;
+	});
+
+	$scope.setCurrentProject = function(id)
+	{
+		globalProjects.setCurrent(id);
 	}
 
 	$scope.projectSearch = function(project)
@@ -36,27 +131,6 @@ angular.module('myApp', ["ngRoute"]).controller('AppCtrl', function($scope)
 		}
 		return project;
 	};
-
-	$scope.setCurrentProject = function(id)
-	{
-		$scope.current = getProjectById(id);
-	}
-
-	function getProjectById(id)
-	{
-		return $scope.projects[searchIndex(id)];
-	}
-
-	function searchIndex(id)
-	{
-		for (var i = 0; i < projects.length; ++i)
-		{
-			if(projects[i].id == id)
-				return i;
-		}
-
-		return null;
-	}
 
 	function containsKeywordOneLetterTypos(project, word)
 	{
@@ -147,38 +221,15 @@ angular.module('myApp', ["ngRoute"]).controller('AppCtrl', function($scope)
 		});
 		return existsTag;
 	}
-})
-.controller('detailsCtrl', function($scope){
-	
-	startSlider();
+});
 
-	function startSlider()
-	{
-		attachGallery($scope.current);
-		var slider = new IdealImageSlider.Slider('#slider');
-		slider.start();
-	}
-
-	function attachGallery(current)
-	{
-		var images = "";
-
-		angular.forEach(current.images, function(value, key)
-		{
-			images += "<img src=\"" + value + "\">";
-		});
-
-		document.getElementById("slider").innerHTML = images;
-	}
-})
-.controller('projectsLoad', function($scope){
-
-	
-})
-.controller('addProjectCtrl', ['$scope', '$http', '$location', function($scope, $http, $location){
+app.controller('addProjectCtrl', ['$scope', '$http', '$location', 'globalProjects', function($scope, $http, $location, globalProjects) {
 	$scope.numberRegex = "/^(\d+((,|\.)\d{1,2})?)?$/";
 	$scope.years = arrayInRange(1900, 2025).reverse();
 	$scope.url = 'php/add_new_project.php';
+	$scope.exists = false;
+	$scope.current = globalProjects.getCurrent();
+	$scope.selectedOption = $scope.years[$scope.years.indexOf(parseInt($scope.current.year))];
 
 	function arrayInRange(start, end)
 	{
@@ -190,24 +241,24 @@ angular.module('myApp', ["ngRoute"]).controller('AppCtrl', function($scope)
 
 	$scope.addProject = function() {
 		var addProjectForm = encodeFormToJSON();
-
+		
 		$http.post($scope.url, addProjectForm)
 		.success(function(data) {
-			console.log(data);
+			if (data.length > 0)
+				console.log(data);
 			console.log('Successful insert of project to database');
+			saveFiles();
 		})
 		.error(function(data) {
 			console.log(data);
 			console.log('Unsuccessful insert of project to database');
 		});
-
-		saveFiles();
-		$location.path("/");
 	}
 
 	function encodeFormToJSON()
 	{
 		var result = {};
+		result.exists = false;
 		result.name = document.querySelector('#name').value;
 		var year = document.querySelector('#year')
 		result.year = year.options[year.selectedIndex].text;
@@ -238,23 +289,15 @@ angular.module('myApp', ["ngRoute"]).controller('AppCtrl', function($scope)
 
 		xhr.onload = function() {
 			if (this.status == 200)
-				console.log('Server response:', this.response);
+			{
+				console.log('Images upload status: OK');
+			}
 		};
 
 		xhr.send(fd);
+		$location.path('/');
 	}
-}])
-.config(function($routeProvider, $locationProvider) {
-		$routeProvider
-		.when("/", { templateUrl : "main.php",
-				controller: "projectsLoad"})
-		.when("/project", { templateUrl : "project.php",
-		controller: "detailsCtrl"})
-		.when("/new", { templateUrl : "add_project.php",
-		controller: "addProjectCtrl"});
-
-	// $locationProvider.html5Mode(true);
-});
+}]);
 
 function readURL(input)
 {

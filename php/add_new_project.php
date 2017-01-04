@@ -1,15 +1,19 @@
 <?php
 	$_POST = json_decode(file_get_contents('php://input'), true);
 	$name = $year = $place = $executor = $architect = $type = $objectType = $style = $price = $yardage = "";
+	$exists = false;
 	$tags = [];
 
+	var_dump($exists);
 	loadFormData();
+	var_dump($exists);
 	saveProject();
 
 	function loadFormData()
 	{
-		global $name, $year, $place, $executor, $architect, $type,	$style, $price, $yardage, $tags, $files;
+		global $exists, $name, $year, $place, $executor, $architect, $type,	$style, $price, $yardage, $tags, $files;
 
+		$exists = getFormElement("exists");
 		$name = allowQuotationSigns(getFormElement("name"));
 		$year = getFormElement("year");
 		$type = allowQuotationSigns(getFormElement("type"));
@@ -48,7 +52,7 @@
 
 	function saveProject()
 	{
-		global $name, $year, $place, $executor, $architect, $type,	$style, $price, $yardage, $objectType, $tags, $files;
+		global $exists, $name, $year, $place, $executor, $architect, $type,	$style, $price, $yardage, $objectType, $tags, $files;
 		require_once "connect.php";
 
 		$connection = mysqli_connect($host, $db_user, $db_password, $db_name) or die("Error " . mysqli_error($connection));
@@ -60,7 +64,7 @@
 		else
 		{
 			$connection->set_charset("utf8");
-			if (addProject($connection, $name, $year, $type, $place, $executor, $architect, $objectType, $style, $yardage, $price))
+			if (addProject($connection, $exists, $name, $year, $type, $place, $executor, $architect, $objectType, $style, $yardage, $price))
 			{
 				$sql = "SELECT MAX(id) AS last_updated_id FROM projects;";
 				$id = mysqli_fetch_array(mysqli_query($connection, $sql))["last_updated_id"] or die("Error in Selecting " . mysqli_error($connection)); 
@@ -71,7 +75,7 @@
 		}
 	}
 
-	function addProject($connection, $name, $year, $type, $place, $executor, $architect, $objectType, $style, $yardage, $price)
+	function addProject($connection, $exists, $name, $year, $type, $place, $executor, $architect, $objectType, $style, $yardage, $price)
 	{
 		$sql = "INSERT INTO projects(name, year, place, type, executor, architect, objectType, style, yardage, price)
     			VALUES('$name', '$year', '$place', '$type', '$executor', '$architect', '$objectType', '$style', '$yardage', '$price');";
@@ -92,27 +96,4 @@
 				die('Error: ' . mysql_error());
 		}
 	}
-
-	function addFiles()
-	{
-		$target_dir = "images/";
-	    $uploadSuccess = true;
-
-	    $total = count($_FILES["files"]["name"]);
-
-	    for($i = 0; $i < $total; $i++)
-	    {
-	        $target_file = $target_dir . basename($_FILES["files"]["name"][$i]);
-
-	        if (!uploadFile($target_file, $i))
-	            $uploadSuccess = false;
-	    }
-
-	    return $uploadSuccess;
-	}
-
-    function uploadFile($target_file, $index)
-    {
-        return move_uploaded_file($_FILES["files"]["tmp_name"][$index], $target_file);
-    }
 ?>
