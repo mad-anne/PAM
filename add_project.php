@@ -140,19 +140,21 @@
 </div>
 <div class="form-group">
 	<div class="row">
-		<label for="files" class="col-sm-2 control-label">zdjęcia</label>
-		<div class="col-sm-10">
-			<input type="file" id="files" name="files[]" accept="image/*" enctype="multipart/form-data" onchange="readURL(this);" multiple>
+        <label class="col-sm-2 control-label">zdjęcia</label>
+		<div id="imagesUpload" class="col-sm-10">
+			<div id="imagesUploadGroup1" class="imagesUploadGroup">
+                <div id="imagesGroup1" class="imagesGroup">
+                    <img src="images/uploadButton.png" id="upfile1" class="imageUpload" ng-click="invokeUpload($event)" onmouseover="showBin(this)" onmouseout="hideBin(this)"/>
+                    <img src="images/bin.png" class="bin"/>
+                </div>
+				<input type="file" id="file1" name="file" class="fileUpload" custom-on-change="loadImage" accept="image/*" style="display: none;" >
+			</div>
 		</div>
 	</div>
-	<div class="row">
-		<div class="col-sm-2"></div>
-		<div class="col-sm-10" id="preview"></div>
-	</div>
-	<div class="row">
-		<div class="col-sm-2"></div>
-		<!-- <span class="col-sm-10 error" id="filesErr">{{filesErr}}</span> -->
-	</div>
+    <div class="row">
+        <div class="col-sm-2"></div>
+        <!-- <span class="col-sm-10 error" id="filesErr">{{filesErr}}</span> -->
+    </div>
  </div>
 <div class="row">
 	<div class="col-sm-10"></div>

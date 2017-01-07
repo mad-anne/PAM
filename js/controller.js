@@ -14,6 +14,16 @@ app.config(function($routeProvider, $locationProvider) {
 				controller: 'addProjectCtrl'});
 });
 
+app.directive('customOnChange', function() {
+    return {
+        restrict: 'A',
+        link: function (scope, element, attrs) {
+            var onChangeHandler = scope.$eval(attrs.customOnChange);
+            element.bind('change', onChangeHandler);
+        }
+    };
+});
+
 app.service('globalProjects', function($http) {
 	_projects = null;
 	_current = null;
@@ -21,7 +31,7 @@ app.service('globalProjects', function($http) {
 	this.async = function() {
 		var promise = $http.get('projects.php')
 		.then(function(response) {
-			_projects = response.data
+			_projects = response.data;
 			return _projects;
 		});
 		return promise;
@@ -237,7 +247,7 @@ app.controller('addProjectCtrl', ['$scope', '$http', '$location', 'globalProject
 	if ($scope.current)
 	{
 		$scope.selectedOption = $scope.years[$scope.years.indexOf(parseInt($scope.current.year))];
-		$scope.tags = getTags($scope.current.tags).join(', '); 
+		$scope.tags = getTags($scope.current.tags).join(', ');
 		loadImages($scope.current.images);
 	}
 
@@ -260,19 +270,19 @@ app.controller('addProjectCtrl', ['$scope', '$http', '$location', 'globalProject
 
 	$scope.addProject = function() {
 		var addProjectForm = encodeFormToJSON();
-		
+
 		$http.post($scope.url, addProjectForm)
 		.success(function(data) {
 			if (data.length > 0)
 				console.log(data);
 			console.log('Successful insert of project to database');
-			saveFiles();
+            saveImages();
 		})
 		.error(function(data) {
 			console.log(data);
 			console.log('Unsuccessful insert of project to database');
 		});
-	}
+	};
 
 	function encodeFormToJSON()
 	{
@@ -293,35 +303,29 @@ app.controller('addProjectCtrl', ['$scope', '$http', '$location', 'globalProject
 		return result;
 	}
 
-	function saveFiles()
-	{
-		var xhr = new XMLHttpRequest();
-		xhr.open('POST', 'php/add_files.php', true);
-		var fd = new FormData();
+    function saveImages()
+    {
+    	var xhr = new XMLHttpRequest();
+    	xhr.open('POST', 'php/add_files.php', true);
+    	var fd = new FormData();
 
-		var files = document.querySelector('#files').files;
-		
-		for (var i = 0; i < files.length; i++)
-		{
-			fd.append("files[]", files[i]);
-		}
+    	var uploads = document.querySelectorAll('.fileUpload');
 
-		xhr.onload = function() {
-			if (this.status == 200)
-			{
-				console.log('Images upload status: OK');
-			}
-		};
+    	for (var i = 0; i < uploads.length - 1; i++)
+    		fd.append("files[]", uploads[i].files[0]);
 
-		xhr.send(fd);
-		globalProjects.setCurrent(null);
-		$location.path('/');
-	}
+    	xhr.onload = function() {
+    		if (this.status == 200)
+    			console.log('Images upload status: OK');
+    	};
+
+    	xhr.send(fd);
+    	globalProjects.setCurrent(null);
+    	$location.path('/');
+    }
 
 	function loadImages(images)
 	{
-		removeExistingImages();
-		
 		var preview = document.querySelector('#preview');
 
 		angular.forEach(images, function(value, key) {
@@ -330,38 +334,106 @@ app.controller('addProjectCtrl', ['$scope', '$http', '$location', 'globalProject
 			image.name = value.substr(7);
 			image.class = "imagePreview";
 			preview.appendChild(image);
-		}, false);	
+		}, false);
+	}
+
+	$scope.invokeUpload = function(event)
+	{
+	    var id = event.target.id.substr(6);
+
+        if (event.target.className == 'imageUpload')
+            $('#file' + id).click();
+
+        if (event.target.className == 'preview')
+            document.getElementById('imagesUploadGroup' + id).remove();
+	};
+
+	$scope.loadImage = function(event)
+	{
+		var id = event.target.id.substr(4);
+		var image = document.getElementById('upfile' + id);
+
+		if (image.className == 'imageUpload')
+		{
+			var files = this.files;
+			readAndPreview(files[0], image);
+			addNewFileInput(parseInt(id) + 1);
+		}
+	};
+
+	function readAndPreview(file, image) {
+		var reader = new FileReader();
+
+		reader.addEventListener("load", function () {
+			image.src = this.result;
+			image.name = file.name;
+			image.className = "preview";
+			image.parentNode.classList.add("preview");
+		}, false);
+
+		reader.readAsDataURL(file);
+	}
+
+	function addNewFileInput(id)
+	{
+		var image = document.createElement('img');
+		image.id = 'upfile' + id;
+		image.src = 'images/uploadButton.png';
+		image.className = 'imageUpload';
+        image.addEventListener('click', $scope.invokeUpload);
+        image.addEventListener('mouseover', function() { showBin(this); });
+        image.addEventListener('mouseout', function() { hideBin(this); });
+
+        var imageBin = document.createElement('img');
+        imageBin.src = 'images/bin.png';
+        imageBin.className = 'bin';
+
+        var imagesGroup = document.createElement('div');
+        imagesGroup.id = 'imagesGroup' + id;
+        imagesGroup.className = 'imagesGroup';
+
+        imagesGroup.appendChild(image);
+        imagesGroup.appendChild(imageBin);
+
+		var input = document.createElement('input');
+		input.id = 'file' + id;
+		input.className = 'fileUpload';
+		input.name = 'file';
+		input.type = 'file';
+		input.accept = 'image/*';
+		input.style.display = 'none';
+        input.addEventListener('change', $scope.loadImage);
+
+		var group = document.createElement('div');
+		group.id = 'imagesUploadGroup' + id;
+		group.className = 'imagesUploadGroup';
+		group.appendChild(imagesGroup);
+		group.appendChild(input);
+
+		var imagesUpload = document.getElementById('imagesUpload');
+		imagesUpload.appendChild(group);
 	}
 }]);
 
-function readURL(input)
+function showBin(imagePreview)
 {
-	removeExistingImages();
-	
-	var preview = document.querySelector('#preview');
-    var files   = document.querySelector('input[type=file]').files;
-
-    function readAndPreview(file) {
-    	var reader = new FileReader();
-
-        reader.addEventListener("load", function () {
-			var image = new Image();
-			image.src = this.result;
-			image.name = file.name;
-			image.class = "imagePreview";
-	        preview.appendChild(image);
-        }, false);
-
-        reader.readAsDataURL(file);
-	}
-
-	if (files)
-    	[].forEach.call(files, readAndPreview);
+    if (imagePreview.className == "preview")
+        document.getElementById('imagesGroup' + imagePreview.id.substr(6)).lastElementChild.style.visibility = 'visible';
 }
 
-function removeExistingImages()
+function hideBin(imagePreview)
 {
-	var preview = document.querySelector('#preview');
-	while (preview.firstChild)
-	    preview.removeChild(preview.firstChild);
+    if (imagePreview.className == "preview")
+        document.getElementById('imagesGroup' + imagePreview.id.substr(6)).lastElementChild.style.visibility = 'hidden';
 }
+
+Element.prototype.remove = function() {
+    this.parentElement.removeChild(this);
+};
+NodeList.prototype.remove = HTMLCollection.prototype.remove = function() {
+    for(var i = this.length - 1; i >= 0; i--) {
+        if(this[i] && this[i].parentElement) {
+            this[i].parentElement.removeChild(this[i]);
+        }
+    }
+};

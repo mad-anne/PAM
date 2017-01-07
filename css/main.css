@@ -155,10 +155,63 @@ dl
 	line-height: 2em;
 }
 
-#preview img
+.imagesUploadGroup
 {
+	display: inline-block;
+	float: left;
 	width: 60px;
 	height: 60px;
+}
+
+.imagesUploadGroup img
+{
+	cursor: pointer;
+}
+
+.imagesUploadGroup img:hover
+{
+	opacity: 0.4;
+}
+
+.imagesGroup
+{
+	display: inline-block;
+	position: relative;
+	top: 0;
+	left: 0;
+}
+
+.imagesGroup img:first-child
+{
 	margin-right: 10px;
-	margin-top: 10px;
+}
+
+.imagesGroup img
+{
+	display: inline-block;
+	position: absolute;
+	width: 60px;
+	height: 60px;
+	top: 0;
+	left: 0;
+}
+
+.imagesGroup .imageUpload
+{
+	height: 60px;
+	width: 60px;
+}
+
+.imagesGroup .bin
+{
+	visibility: hidden;
+	width: 20px;
+	height: 20px;
+	margin: 20px;
+}
+
+
+.fileUpload
+{
+	display: none;
 }
