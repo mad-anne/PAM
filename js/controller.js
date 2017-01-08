@@ -1,6 +1,8 @@
 var app = angular.module('myApp', ['ngRoute', 'searchEngine']);
 var app_searchEngine = angular.module('searchEngine', []);
 
+var imagesToRemove = [];
+
 app.config(function($routeProvider, $locationProvider) {
 		$routeProvider
 		.when(	'/',
@@ -11,7 +13,10 @@ app.config(function($routeProvider, $locationProvider) {
 				controller: 'detailsCtrl'})
 		.when(	'/new',
 				{ templateUrl : 'add_project.php',
-				controller: 'addProjectCtrl'});
+				controller: 'addProjectCtrl'})
+		.when(	'/edit',
+				{ templateUrl : 'edit_project.php',
+				controller: 'editProjectCtrl'});
 });
 
 app.directive('customOnChange', function() {
@@ -44,7 +49,7 @@ app.service('globalProjects', function($http) {
 
 	this.getCurrent = function() {
 		return _current;
-	}
+	};
 
 	getIndexById = function (id)
 	{
@@ -107,7 +112,7 @@ app.controller('detailsCtrl', function($scope, $http, $location, globalProjects)
 
 	$scope.modifyProject = function()
 	{
-		$location.path('new');
+		$location.path('edit');
 	}
 });
 
@@ -237,19 +242,10 @@ app.controller('projectsLoad', function($scope, $http, globalProjects) {
 	}
 });
 
-app.controller('addProjectCtrl', ['$scope', '$http', '$location', 'globalProjects', function($scope, $http, $location, globalProjects) {
+app.controller('addProjectCtrl', ['$scope', '$http', '$location', function($scope, $http, $location) {
 	$scope.numberRegex = "/^(\d+((,|\.)\d{1,2})?)?$/";
 	$scope.years = arrayInRange(1900, 2025).reverse();
 	$scope.url = 'php/add_new_project.php';
-
-	$scope.current = globalProjects.getCurrent();
-
-	if ($scope.current)
-	{
-		$scope.selectedOption = $scope.years[$scope.years.indexOf(parseInt($scope.current.year))];
-		$scope.tags = getTags($scope.current.tags).join(', ');
-		loadImages($scope.current.images);
-	}
 
 	function arrayInRange(start, end)
 	{
@@ -257,15 +253,6 @@ app.controller('addProjectCtrl', ['$scope', '$http', '$location', 'globalProject
 	    for (var i = start; i <= end; i++)
 	        arr.push(i);
     	return arr;
-	}
-
-	function getTags(tags)
-	{
-		var result = [];
-		angular.forEach(tags, function(value, key) {
-			result.push(value.tag);
-		});
-		return result;
 	}
 
 	$scope.addProject = function() {
@@ -289,7 +276,7 @@ app.controller('addProjectCtrl', ['$scope', '$http', '$location', 'globalProject
 		var result = {};
 		result.id = $scope.current == null ? null : $scope.current.id;
 		result.name = document.querySelector('#name').value;
-		var year = document.querySelector('#year')
+		var year = document.querySelector('#year');
 		result.year = year.options[year.selectedIndex].text;
 		result.place = document.querySelector('#place').value;
 		result.executor = document.querySelector('#executor').value;
@@ -319,23 +306,11 @@ app.controller('addProjectCtrl', ['$scope', '$http', '$location', 'globalProject
     			console.log('Images upload status: OK');
     	};
 
+
     	xhr.send(fd);
     	globalProjects.setCurrent(null);
     	$location.path('/');
     }
-
-	function loadImages(images)
-	{
-		var preview = document.querySelector('#preview');
-
-		angular.forEach(images, function(value, key) {
-			var image = new Image();
-			image.src = value;
-			image.name = value.substr(7);
-			image.class = "imagePreview";
-			preview.appendChild(image);
-		}, false);
-	}
 
 	$scope.invokeUpload = function(event)
 	{
@@ -414,6 +389,252 @@ app.controller('addProjectCtrl', ['$scope', '$http', '$location', 'globalProject
 		imagesUpload.appendChild(group);
 	}
 }]);
+
+app.controller('editProjectCtrl', ['$scope', '$http', '$location', 'globalProjects', function($scope, $http, $location, globalProjects) {
+    $scope.numberRegex = "/^(\d+((,|\.)\d{1,2})?)?$/";
+    $scope.years = arrayInRange(1900, 2025).reverse();
+    $scope.url = 'php/add_new_project.php';
+	imagesToRemove = [];
+
+    $scope.current = globalProjects.getCurrent();
+	$scope.selectedOption = $scope.years[$scope.years.indexOf(parseInt($scope.current.year))];
+	$scope.tags = getTags($scope.current.tags).join(', ');
+	loadImages($scope.current.images);
+
+    function arrayInRange(start, end)
+    {
+        var arr = [];
+        for (var i = start; i <= end; i++)
+            arr.push(i);
+        return arr;
+    }
+
+    function getTags(tags)
+    {
+        var result = [];
+        angular.forEach(tags, function(value, key) {
+            result.push(value.tag);
+        });
+        return result;
+    }
+
+    $scope.addProject = function() {
+        var addProjectForm = encodeFormToJSON();
+
+        $http.post($scope.url, addProjectForm)
+            .success(function(data) {
+                if (data.length > 0)
+                    console.log(data);
+                console.log('Successful insert of project to database');
+
+                if (imagesToRemove.length > 0)
+                	removeImages();
+
+                saveImages();
+
+                globalProjects.setCurrent(null);
+
+                globalProjects.async().then(function(d) {
+                    $location.path('/');
+                });
+            })
+            .error(function(data) {
+                console.log(data);
+                console.log('Unsuccessful insert of project to database');
+            });
+    };
+
+    function encodeFormToJSON()
+    {
+        var result = {};
+        result.id = $scope.current == null ? null : $scope.current.id;
+        result.name = document.querySelector('#name').value;
+        var year = document.querySelector('#year')
+        result.year = year.options[year.selectedIndex].text;
+        result.place = document.querySelector('#place').value;
+        result.executor = document.querySelector('#executor').value;
+        result.architect = document.querySelector('#architect').value;
+        result.type = document.querySelector('#type').value;
+        result.style = document.querySelector('#style').value;
+        result.objectType = document.querySelector('#objectType').value;
+        result.yardage = document.querySelector('#yardage').value;
+        result.price = document.querySelector('#price').value;
+        result.tags = document.querySelector('#tags').value;
+        return result;
+    }
+
+    function saveImages()
+    {
+        var xhr = new XMLHttpRequest();
+        xhr.open('POST', 'php/add_files.php', true);
+        var fd = new FormData();
+
+        var uploads = document.querySelectorAll('.fileUpload');
+
+        for (var i = 0; i < uploads.length - 1; i++)
+            fd.append("files[]", uploads[i].files[0]);
+
+        xhr.onload = function() {
+            if (this.status == 200)
+                console.log('Images upload status: OK');
+        };
+
+        xhr.onreadystatechange = function() {
+            if (xhr.readyState == XMLHttpRequest.DONE) {
+                console.log(xhr.responseText);
+            }
+        };
+
+        fd.append('id', $scope.current.id);
+        xhr.send(fd);
+    }
+
+    function removeImages()
+	{
+        var xhr = new XMLHttpRequest();
+        xhr.open('POST', 'php/remove_files.php', true);
+        var fd = new FormData();
+
+        for (var i = 0; i < imagesToRemove.length - 1; i++)
+            fd.append("files[]", imagesToRemove[i]);
+
+        xhr.onload = function() {
+            if (this.status == 200)
+                console.log('Images upload status: OK');
+        };
+
+        xhr.onreadystatechange = function() {
+            if (xhr.readyState == XMLHttpRequest.DONE) {
+                console.log(xhr.responseText);
+            }
+        };
+
+        xhr.send(imagesToRemove.toString());
+	}
+
+    function loadImages(images)
+    {
+        var i = 0;
+        for ( ; i < images.length; i++)
+            andNewImagePreview(i, images[i]);
+
+        addNewFileInput(i);
+    }
+}]);
+
+function loadImage(elem)
+{
+    var id = elem.id.substr(4);
+    var image = document.getElementById('upfile' + id);
+
+    if (image.className == 'imageUpload')
+    {
+        var files = elem.files;
+        readAndPreview(files[0], image);
+        addNewFileInput(parseInt(id) + 1);
+    }
+};
+
+function andNewImagePreview(id, source)
+{
+    var image = document.createElement('img');
+    image.id = 'upfile' + id;
+    image.src = source;
+    image.name = source.substr(7);
+    image.className = 'preview';
+    image.addEventListener('click', function() { invokeUpload(this); });
+    image.addEventListener('mouseover', function() { showBin(this); });
+    image.addEventListener('mouseout', function() { hideBin(this); });
+
+    var imageBin = document.createElement('img');
+    imageBin.src = 'images/bin.png';
+    imageBin.className = 'bin';
+
+    var imagesGroup = document.createElement('div');
+    imagesGroup.id = 'imagesGroup' + id;
+    imagesGroup.className = 'imagesGroup';
+
+    imagesGroup.appendChild(image);
+    imagesGroup.appendChild(imageBin);
+
+    var group = document.createElement('div');
+    group.id = 'imagesUploadGroup' + id;
+    group.className = 'imagesUploadGroup';
+    group.className += ' imagesUploaded';
+    group.appendChild(imagesGroup);
+
+    var imagesUpload = document.getElementById('imagesUpload');
+    imagesUpload.appendChild(group);
+}
+
+function addNewFileInput(id)
+{
+    var image = document.createElement('img');
+    image.id = 'upfile' + id;
+    image.src = 'images/uploadButton.png';
+    image.className = 'imageUpload';
+    image.addEventListener('click', function() { invokeUpload(this); });
+    image.addEventListener('mouseover', function() { showBin(this); });
+    image.addEventListener('mouseout', function() { hideBin(this); });
+
+    var imageBin = document.createElement('img');
+    imageBin.src = 'images/bin.png';
+    imageBin.className = 'bin';
+
+    var imagesGroup = document.createElement('div');
+    imagesGroup.id = 'imagesGroup' + id;
+    imagesGroup.className = 'imagesGroup';
+
+    imagesGroup.appendChild(image);
+    imagesGroup.appendChild(imageBin);
+
+    var input = document.createElement('input');
+    input.id = 'file' + id;
+    input.className = 'fileUpload';
+    input.name = 'file';
+    input.type = 'file';
+    input.accept = 'image/*';
+    input.style.display = 'none';
+    input.addEventListener('change', function() { loadImage(this); } );
+
+    var group = document.createElement('div');
+    group.id = 'imagesUploadGroup' + id;
+    group.className = 'imagesUploadGroup';
+    group.appendChild(imagesGroup);
+    group.appendChild(input);
+
+    var imagesUpload = document.getElementById('imagesUpload');
+    imagesUpload.appendChild(group);
+}
+
+function readAndPreview(file, image) {
+    var reader = new FileReader();
+
+    reader.addEventListener("load", function () {
+        image.src = this.result;
+        image.name = file.name;
+        image.className = "preview";
+        image.parentNode.classList.add("preview");
+    }, false);
+
+    reader.readAsDataURL(file);
+}
+
+function invokeUpload(elem)
+{
+    var id = elem.id.substr(6);
+
+    if (elem.className == 'imageUpload')
+        $('#file' + id).click();
+
+    if (elem.className == 'preview')
+	{
+		if (elem.parentNode.parentNode.lastChild.className == 'imagesGroup')
+            imagesToRemove.push(elem.src.split('images/')[1]);
+
+		document.getElementById('imagesUploadGroup' + id).remove();
+	}
+};
 
 function showBin(imagePreview)
 {

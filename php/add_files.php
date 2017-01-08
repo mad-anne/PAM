@@ -4,19 +4,27 @@
 
 	function uploadFiles()
 	{
-		$projectId = getLastUpdatedProjectId();
+		$projectId = isset($_POST["id"]) ? $_POST["id"] : getLastUpdatedProjectId();
 		$target_dir = "../images/";
 		$target_prefix = $target_dir . 'img' .str_pad($projectId, 6, "0", STR_PAD_LEFT);
 
-		$total = count($_FILES["files"]["name"]);
+		$firstIndex = 0;
+		$lastIndex = $firstIndex + count($_FILES["files"]["name"]) - 1;
 
-		for($i = 0; $i < $total; $i++)
+		for($i = $firstIndex; $i <= $lastIndex; $i++)
 		{
+		    echo 'w funkcji';
 			$fileToUpload = $_FILES["files"]["tmp_name"][$i];
 			$ext = pathinfo($_FILES["files"]["name"][0], PATHINFO_EXTENSION);
 			$target_suffix = str_pad($i, 2, "0", STR_PAD_LEFT);
 			$target = $target_prefix . $target_suffix . '.' . $ext;
-			move_uploaded_file($fileToUpload, $target);
+
+			var_dump(file_exists($target));
+
+			if (!file_exists($target))
+			    move_uploaded_file($fileToUpload, $target);
+            else
+                $lastIndex++;
 		}
 	}
 
